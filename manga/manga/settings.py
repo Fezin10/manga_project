@@ -11,9 +11,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,6 +29,7 @@ SECRET_KEY = 'django-insecure-ujmi@#wy7imv$lh*wc@+_2yesw4#t$i9ibrd_(^=x%v(pd7%ju
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
 
 
 # Application definition
@@ -81,6 +85,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'mangaweb.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

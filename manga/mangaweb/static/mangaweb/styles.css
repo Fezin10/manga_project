@@ -1,0 +1,19 @@
+#dark_mode_button {
+    color: black;
+}
+
+.light_primary {
+    color: beige;
+}
+
+.light_secondary {
+    color: orange;
+}
+
+.dark_primary {
+    color: darkblue;
+}
+
+.dark_secondary {
+    color: blue;
+}

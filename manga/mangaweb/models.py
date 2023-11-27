@@ -8,6 +8,8 @@ from . import helper
 class User(AbstractUser):
     moderator = models.BooleanField(default=False)
     author = models.BooleanField(default=False)
+    icon = models.ImageField(upload_to=helper.user, null=True)
+    following = models.ManyToManyField('self')
 
 
 class Banned(models.Model):
@@ -39,10 +41,17 @@ class Manga(models.Model):
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     views = models.PositiveIntegerField(default=0)
     thumb = models.ImageField(upload_to=helper.manga_thumb)
-    likes = models.PositiveIntegerField(default=0)
+    likes = models.ManyToManyField(User, related_name='liked_manga')
 
 
 class Page(models.Model):
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='pages')
     page_number = models.PositiveSmallIntegerField()
     page_content = models.ImageField(upload_to=helper.manga_page)
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    manga = models.ForeignKey(Manga, on_delete=models.CASCADE)
+    message = models.TextField(max_length=256)
+    comment_likes = models.ManyToManyField(User, related_name='like_on_comment')

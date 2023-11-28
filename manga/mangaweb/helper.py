@@ -22,6 +22,6 @@ def manga_page(instance, filename):
 
 
 def user(instance, filename):
-    user_id = instance.id or get_user_model().objects.latest('id').id + 1
+    user_id = instance.id
     file_extension = os.path.splitext(filename)[1].lower()
     return f"user/{user_id}/icon{file_extension}"

@@ -9,7 +9,7 @@ class User(AbstractUser):
     moderator = models.BooleanField(default=False)
     author = models.BooleanField(default=False)
     icon = models.ImageField(upload_to=helper.user, null=True)
-    following = models.ManyToManyField('self')
+    following = models.ManyToManyField('self', blank=True)
 
 
 class Banned(models.Model):

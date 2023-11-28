@@ -2,12 +2,10 @@
     color: black;
 }
 
-.light_primary {
-    color: beige;
-}
-
-.light_secondary {
-    color: orange;
+.body_content {
+    padding-top: 1rem;
+    margin: auto;
+    width: 80vw;
 }
 
 .dark_primary {
@@ -16,4 +14,12 @@
 
 .dark_secondary {
     color: blue;
+}
+
+.light_primary {
+    color: beige;
+}
+
+.light_secondary {
+    color: orange;
 }

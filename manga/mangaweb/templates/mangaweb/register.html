@@ -1,0 +1,35 @@
+{% extends "mangaweb/layout.html" %}
+
+{% block body %}
+
+    <h2>Register</h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    <form onsubmit="return validateFile()" action="{% url 'register' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <input class="form-control" autofocus type="text" name="username" placeholder="Username">
+        </div>
+        <div class="mb-3">
+            <input class="form-control" type="email" name="email" placeholder="Email Address">
+        </div>
+        <div class="mb-3">
+            <input class="form-control" type="password" name="password" placeholder="Password" aria-describedby="passwordHelpInline">
+            <span id="passwordHelpInline" class="form-text">Must be at least 4 characters long.</span>
+        </div>
+        <div class="mb-3">
+            <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
+        </div>
+        <div class="mb-3">
+            <input class="form-control" type="file" name="icon" accept="image/png, image/jpeg">
+            <span id="iconhelpinline" class="form-text">Optional - Choose an icon, size limit is 2 MB.</span>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Register">
+    </form>
+
+    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+
+{% endblock %}

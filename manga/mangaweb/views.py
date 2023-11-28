@@ -36,6 +36,7 @@ def logout_view(request):
 
 
 def register_view(request):
+    # helper error function to return errors quickly
     def error(message):
         return render(request, "mangaweb/register.html", {"message": message})
     
@@ -46,9 +47,14 @@ def register_view(request):
         email = request.POST["email"]
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
+        icon = request.FILES.get("icon")
         
-
-
+        # validation of the icon and the password
+        if icon:
+            if not icon.content_type.startswith('image'):
+                return error("Invalid file type.")
+            if icon.size > 2097152:
+                return error("Image limit is 2 MB.")
         if len(password) < 4:
             return error("Password must be at least 4 characters long.")
         if password != confirmation:
@@ -56,18 +62,7 @@ def register_view(request):
         
         try:
             user = User.objects.create_user(username, email, password)
-
-            try:
-                icon = request.FILES.get("icon")
-
-                if not icon.content_type.startswith('image'):
-                    return error("Invalid file type.")
-                if icon.size > 2097152:
-                    return error("Image limit is 2 MB.")
-                user.icon = icon
-            except:
-                pass
-
+            user.icon = icon
             user.save()
         except IntegrityError:
             return error("Username already taken.")

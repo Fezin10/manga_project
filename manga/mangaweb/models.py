@@ -1,4 +1,6 @@
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.db import models
 
 from . import helper
@@ -24,7 +26,10 @@ class Chapter(models.Model):
 
 class Genre(models.Model):
     id  = models.AutoField(primary_key=True)
-    genre = models.TextField(max_length=20)
+    genre = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return self.genre
 
 
 class Manga(models.Model):
@@ -35,12 +40,12 @@ class Manga(models.Model):
     ]
 
     id = models.AutoField(primary_key=True)
-    name = models.TextField()
+    name = models.CharField(max_length=50)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='works')
     genres = models.ManyToManyField(Genre)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     views = models.PositiveIntegerField(default=0)
-    thumb = models.ImageField(upload_to=helper.manga_thumb)
+    thumb = models.ImageField(upload_to=helper.manga_thumb, null=True)
     likes = models.ManyToManyField(User, related_name='liked_manga')
 
 
@@ -55,3 +60,7 @@ class Comment(models.Model):
     manga = models.ForeignKey(Manga, on_delete=models.CASCADE)
     message = models.TextField(max_length=256)
     comment_likes = models.ManyToManyField(User, related_name='like_on_comment')
+
+@receiver(post_delete, sender=Manga)
+def delete_manga_thumb(sender, instance, **kwargs):
+    instance.thumb.delete(False)

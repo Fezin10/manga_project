@@ -24,6 +24,11 @@
                 <li class="nav-item">
                   <a class="nav-link" href="TODO">Following</a>
                 </li>
+                {% if user.author %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'addmanga' %}">Submit Manga</a>
+                  </li>
+                {% endif %}
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                 </li>
@@ -36,7 +41,10 @@
                 </li>
               {% endif %}
               <li class="nav-item">
-                <a class="nav-link btn btn-light" id="dark_mode_button">Dark Mode</a>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" role="switch" id="darkmode">
+                  <label class="form-check-label" for="darkmode">Darkmode</label>
+                </div>
               </li>
             </ul>
             <form class="d-flex" role="search">

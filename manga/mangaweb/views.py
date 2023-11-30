@@ -6,9 +6,51 @@ from django.db.models import Max, Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .models import *
 
-# Create your views here.
+from .models import *
+from . import helper
+
+
+@login_required
+def addmanga(request):
+    if request.user.author == False:
+        return HttpResponseRedirect(reverse('index'))
+    if request.method == 'GET':
+        return render(request, 'mangaweb/addmanga.html', {'genres': Genre.objects.all().order_by('-genre')})
+    elif request.method == 'POST':
+        def error(message):
+            return render(request, 'mangaweb/addmanga.html', {'genres': Genre.objects.all().order_by('-genre'), 'message': message})
+
+        manga = Manga()
+        manga.name = request.POST["manga_name"].strip()
+        manga.author = request.user
+        manga.status = request.POST["status"]
+        try:
+            thumb = request.FILES["thumb"]
+        except:
+            thumb = None
+        genres = request.POST.getlist("genres")
+        custom = request.POST["custom_genre"].split(',')
+        
+        # check if the custom genre exists and them add all genres to the manga, create them if dont exist
+        if custom and len(custom) > 1 or custom[0] != '': genres.extend(custom)
+        if len(genres) < 1:
+            return error('You must provide at least 1 genre')
+        check = helper.manga_check(manga, thumb)
+        if check == 'success':
+            manga.save()
+            manga.thumb = thumb
+            manga.save()
+            for genre in genres:
+                if len(genre) > 20:
+                    return error('Custom genre size is larger than 20 characters')
+                entry, created = Genre.objects.get_or_create(genre=genre.strip().capitalize())
+                manga.genres.add(entry)
+            return HttpResponse("manga page")
+        else:
+            return error(check)
+
+
 def index(request):
     # Get the most popular mangas that are finished or releasing
     mangas = Manga.objects.filter(status__in=['F', 'R']).annotate(num_likes=Count('likes')).order_by('-num_likes')
@@ -49,7 +91,9 @@ def register_view(request):
         confirmation = request.POST["confirmation"]
         icon = request.FILES.get("icon")
         
-        # validation of the icon and the password
+        # validation of the icon, password and email
+        if Banned.objects.get(email=email):
+            return error("You're banned")
         if icon:
             if not icon.content_type.startswith('image'):
                 return error("Invalid file type.")

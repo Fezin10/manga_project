@@ -1,3 +1,6 @@
+import os
+import shutil
+
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
@@ -61,6 +64,22 @@ class Comment(models.Model):
     message = models.TextField(max_length=256)
     comment_likes = models.ManyToManyField(User, related_name='like_on_comment')
 
+
+# Deletion handlers
 @receiver(post_delete, sender=Manga)
-def delete_manga_thumb(sender, instance, **kwargs):
-    instance.thumb.delete(False)
+def delete_manga(sender, instance, **kwargs):
+    manga_directory = os.path.join('media/manga', instance.name)
+    manga_count = len(os.listdir(manga_directory))
+    try:
+        if os.path.exists(manga_directory):
+            if manga_count == 1:
+                shutil.rmtree(manga_directory)
+            else:
+                manga_directory = os.path.join(manga_directory, str(instance.id))
+                shutil.rmtree(manga_directory)
+            
+            print(f"\033[1;34m{manga_directory}\033[m directory deleted.")
+        else:
+            print(f"\033[1;31m{manga_directory}\033[m directory doesn't exist.")
+    except OSError as error:
+        print(f"\033[1;31m{error}\033[m directory doesn't exist.")

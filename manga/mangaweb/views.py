@@ -12,8 +12,17 @@ from . import helper
 
 
 @login_required
+def addchapter(request):
+    if not request.user.author:
+        raise Http404("Only authors can add chapters to their mangas")
+    
+    if request.method == 'GET':
+        return render(request, 'mangaweb/addchapter.html')
+
+
+@login_required
 def addmanga(request):
-    if request.user.author == False:
+    if not request.user.author:
         raise Http404("Only authors can add mangas")
     if request.method == 'GET':
         return render(request, 'mangaweb/addmanga.html', {'genres': Genre.objects.all().order_by('-genre')})

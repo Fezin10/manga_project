@@ -26,7 +26,10 @@
                 </li>
                 {% if user.author %}
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'addmanga' %}">Submit Manga</a>
+                    <a class="nav-link" href="{% url 'addmanga' %}">Add Manga</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'addchapter' %}">Add chapters</a>
                   </li>
                 {% endif %}
                 <li class="nav-item">

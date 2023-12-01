@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.db.models import Max, Count
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -14,7 +14,7 @@ from . import helper
 @login_required
 def addmanga(request):
     if request.user.author == False:
-        return HttpResponseRedirect(reverse('index'))
+        raise Http404("Only authors can add mangas")
     if request.method == 'GET':
         return render(request, 'mangaweb/addmanga.html', {'genres': Genre.objects.all().order_by('-genre')})
     elif request.method == 'POST':
@@ -91,9 +91,14 @@ def register_view(request):
         confirmation = request.POST["confirmation"]
         icon = request.FILES.get("icon")
         
-        # validation of the icon, password and email
-        if Banned.objects.get(email=email):
+        # check if the user is trying to register with a banned email
+        try:
+            Banned.objects.get(email=email)
             return error("You're banned")
+        except Banned.DoesNotExist:
+            pass
+
+        # validation of the icon, password and email
         if icon:
             if not icon.content_type.startswith('image'):
                 return error("Invalid file type.")

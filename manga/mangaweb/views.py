@@ -120,6 +120,17 @@ def logout_view(request):
     return HttpResponseRedirect(reverse('index'))
 
 
+def mangapage(request, manganame, mangaid):
+    if request.method != "GET":
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        try:
+            manga = Manga.objects.get(id=mangaid)
+        except:
+            raise Http404("Manga not found")
+        return render(request, "mangaweb/mangapage.html", {"manga": manga})
+
+
 def register_view(request):
     # helper error function to return errors quickly
     def error(message):

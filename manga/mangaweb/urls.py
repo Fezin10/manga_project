@@ -10,7 +10,8 @@ urlpatterns = [
     path("register", views.register_view, name="register"),
     path("logout", views.logout_view, name="logout"),
     path("addmanga", views.addmanga, name="addmanga"),
-    path("addchapter", views.addchapter, name="addchapter")
+    path("addchapter", views.addchapter, name="addchapter"),
+    path("<str:manganame>/<int:mangaid>", views.mangapage, name="mangapage")
 ]
 
 if settings.DEBUG:

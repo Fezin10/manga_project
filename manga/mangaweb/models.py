@@ -13,6 +13,7 @@ from . import helper
 class User(AbstractUser):
     moderator = models.BooleanField(default=False)
     author = models.BooleanField(default=False)
+    premium = models.BooleanField(default=False)
     icon = models.ImageField(upload_to=helper.user, null=True)
     following = models.ManyToManyField('self', blank=True)
 

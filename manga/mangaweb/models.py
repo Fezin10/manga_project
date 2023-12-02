@@ -51,6 +51,9 @@ class Manga(models.Model):
     thumb = models.ImageField(upload_to=helper.manga_thumb, null=True)
     likes = models.ManyToManyField(User, related_name='liked_manga')
 
+    def __str__(self):
+        return f'{self.name} id:{self.id}'
+
 
 class Page(models.Model):
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='pages')
@@ -66,20 +69,28 @@ class Comment(models.Model):
 
 
 # Deletion handlers
+@receiver(post_delete, sender=Chapter)
+def delete_chapter(sender, instance, **kwargs):
+    manga = instance.manga
+    chapter_directory = os.path.join('media/manga/', manga.name, str(manga.id), str(instance.chapter_number))
+    try:
+        shutil.rmtree(chapter_directory)
+        print(f"\033[1;34m{chapter_directory}\033[m directory deleted.")
+    except OSError as error:
+        print(f"\033[1;31m{error}\033[m directory doesn't exist.")
+
+
 @receiver(post_delete, sender=Manga)
 def delete_manga(sender, instance, **kwargs):
     manga_directory = os.path.join('media/manga', instance.name)
     manga_count = len(os.listdir(manga_directory))
     try:
-        if os.path.exists(manga_directory):
-            if manga_count == 1:
-                shutil.rmtree(manga_directory)
-            else:
-                manga_directory = os.path.join(manga_directory, str(instance.id))
-                shutil.rmtree(manga_directory)
-            
-            print(f"\033[1;34m{manga_directory}\033[m directory deleted.")
+        if manga_count == 1:
+            shutil.rmtree(manga_directory)
         else:
-            print(f"\033[1;31m{manga_directory}\033[m directory doesn't exist.")
+            manga_directory = os.path.join(manga_directory, str(instance.id))
+            shutil.rmtree(manga_directory)
+        
+        print(f"\033[1;34m{manga_directory}\033[m directory deleted.")
     except OSError as error:
         print(f"\033[1;31m{error}\033[m directory doesn't exist.")

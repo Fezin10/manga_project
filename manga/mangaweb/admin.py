@@ -1,9 +1,12 @@
 from django.contrib import admin
 from .models import *
 
-class mangaAdmin(admin.ModelAdmin):
-    list_display = ['name', 'id']
+
+class chapterAdmin(admin.ModelAdmin):
+    list_display = ['manga', 'id']
+
 
 admin.site.register(User)
 admin.site.register(Genre)
-admin.site.register(Manga, mangaAdmin)
+admin.site.register(Manga)
+admin.site.register(Chapter, chapterAdmin)

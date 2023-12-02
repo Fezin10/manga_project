@@ -5,23 +5,29 @@
 {% if message %}
     <h3 class="message">{{ message }}</h3>
 {% endif %}
-<form action="{% url 'addmanga' %}" method="post" enctype="multipart/form-data">
+<form action="{% url 'addchapter' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="mb-3">
         <label for="chapter" class="form-label">Which chapter are you adding?</label>
         <input type="number" min="1" step="1" name="chapter" class="form-control" required placeholder="1">
-        <span class="form-text">Don't need to add 0's before the number. The number must be integer</span>
+        <span class="form-text">The number must be integer</span>
     </div>
     <div class="mb-3">
         <label for="status" class="form-label">Select the manga:</label>
-        <select class="form-select" name="status" required>
+        <select class="form-select" name="manga" required>
             {% for manga in mangas %}
-                <option value="{{ manga.id }}">{{ manga }}</option>
+                <option value="{{ manga.id }}">{{ manga.name }}</option>
             {% empty %}
                 <option value="" disabled selected>You don't have any manga to add chapters</option>
             {% endfor %}
         </select>
     </div>
-    <input class="btn btn-primary" type="submit" value="Submit manga entry">
+    <input class="btn btn-primary" type="submit" value="Submit chapter to the manga">
+    <div class="mb-3">
+        <label for="formFile" class="form-label">Select the pages</label>
+        <input class="form-control" type="file" name="pages" accept="image/*" multiple id="image_input" required>
+        <span class="form-text">Select the pages in order! Max image size: 5MB</span>
+    </div>
+    <div id="image_preview" class="container text-center"></div>
 </form>
 {% endblock %}

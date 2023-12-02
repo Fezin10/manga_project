@@ -15,9 +15,38 @@ from . import helper
 def addchapter(request):
     if not request.user.author:
         raise Http404("Only authors can add chapters to their mangas")
+    def error(message):
+        return render(request, 'mangaweb/addchapter.html', {'mangas': Manga.objects.filter(author=request.user), 'message': message})
     
     if request.method == 'GET':
-        return render(request, 'mangaweb/addchapter.html')
+        return render(request, 'mangaweb/addchapter.html', {'mangas': Manga.objects.filter(author=request.user)})
+    else:
+        chapter_number = request.POST['chapter']
+        # check if the manga exists
+        try:
+            manga = Manga.objects.get(id=request.POST['manga'])
+        except:
+            return error('Invalid manga selected!')
+        
+        # check if the chapter is free to use
+        try:
+            Chapter.objects.get(manga=manga, chapter_number=chapter_number)
+            return error('Chapter already exists!')
+        except:
+            pass
+
+        chapter = Chapter(chapter_number=chapter_number, manga=manga)
+        if request.FILES:
+            chapter.save()
+            for i, image in enumerate(request.FILES.getlist('pages'), start=1):
+                if not image.content_type.startswith('image'):
+                    chapter.delete()
+                    return error('Invalid file type sended as image, chapter not saved!')
+                                
+                Page(chapter=chapter, page_number=i, page_content=image).save()
+        else:
+            return error('No images provided')
+        return HttpResponse('OK')
 
 
 @login_required
@@ -55,7 +84,7 @@ def addmanga(request):
                     return error('Custom genre size is larger than 20 characters')
                 entry, created = Genre.objects.get_or_create(genre=genre.strip().capitalize())
                 manga.genres.add(entry)
-            return HttpResponse("manga page")
+            return HttpResponseRedirect(reverse('addchapter'))
         else:
             return error(check)
 

@@ -6,13 +6,16 @@
     padding-top: 1rem;
     margin: auto;
     width: 80vw;
-    height: 120vh;
+    margin-bottom: 4rem;
 }
 
 .message {
     color: red;
 }
 
+#image_preview {
+    margin-bottom: 2rem;
+}
 
 
 

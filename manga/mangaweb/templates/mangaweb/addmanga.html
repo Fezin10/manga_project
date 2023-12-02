@@ -39,9 +39,10 @@
     </div>
     <div class="mb-3">
         <label for="formFile" class="form-label">Manga thumbnail</label>
-        <input class="form-control" type="file" name="thumb" accept="image/png, image/jpeg">
+        <input class="form-control" type="file" name="thumb" accept="image/*" id="image_input">
         <span class="form-text">Max image size: 5MB</span>
     </div>
+    <div id="image_preview" class="container text-center"></div>
     <input class="btn btn-primary" type="submit" value="Submit manga entry">
 </form>
 {% endblock %}

@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.db.models import Max, Count
+from django.db.models import Max, Count, OuterRef, Subquery, F
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
@@ -15,11 +15,16 @@ from . import helper
 def addchapter(request):
     if not request.user.author:
         raise Http404("Only authors can add chapters to their mangas")
+    
+    # retrieve the manga the user have and also the last chapter the user have uploaded to prevent confusion when trying to add new chapters
+    latest_chapter_subquery = Chapter.objects.filter(manga=OuterRef('pk')).order_by('-chapter_number').values('chapter_number')[:1]
+    mangas = Manga.objects.annotate(latest_chapter=Subquery(latest_chapter_subquery)).filter(author=request.user).order_by('name')
+
     def error(message):
-        return render(request, 'mangaweb/addchapter.html', {'mangas': Manga.objects.filter(author=request.user), 'message': message})
+        return render(request, 'mangaweb/addchapter.html', {'mangas': mangas, 'message': message})
     
     if request.method == 'GET':
-        return render(request, 'mangaweb/addchapter.html', {'mangas': Manga.objects.filter(author=request.user)})
+        return render(request, 'mangaweb/addchapter.html', {'mangas': mangas})
     else:
         chapter_number = request.POST['chapter']
         # check if the manga exists

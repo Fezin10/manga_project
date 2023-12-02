@@ -16,7 +16,7 @@
         <label for="status" class="form-label">Select the manga:</label>
         <select class="form-select" name="manga" required>
             {% for manga in mangas %}
-                <option value="{{ manga.id }}">{{ manga.name }}</option>
+                <option value="{{ manga.id }}">{{ manga.name }}{% if manga.latest_chapter %} - last chapter: {{ manga.latest_chapter }} {% else %} - No chapters released{% endif %}</option>
             {% empty %}
                 <option value="" disabled selected>You don't have any manga to add chapters</option>
             {% endfor %}

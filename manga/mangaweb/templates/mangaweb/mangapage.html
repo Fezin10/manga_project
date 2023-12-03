@@ -1,6 +1,42 @@
 {% extends "mangaweb/layout.html" %}
 {% block title %}- {{ manga.name }}{% endblock %}
 {% block body %}
-<h2>Add chapter to your manga</h2>
-
+<h2>{{ manga.name }}</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-5"><img src="{{ manga.thumb.url }}" alt="{{ manga.name }} Thumbnail" class="img-fluid"></div>
+        <div class="col-7">
+            <div>Author: {{ manga.author }}</div>
+            <div>Genres:
+                <ul>
+                    {% for genre in manga.genres.all %}
+                        <li>{{ genre }}</li>
+                    {% empty %}
+                        <li>No genre specified</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>Status: {{ manga.get_status_display }}</div>
+            <div>Release date: 
+                {% if manga.releasedate and manga.status != "N" %}
+                    {{ manga.releasedate }}
+                {% elif manga.releasedate %}
+                    To be released in {{ manga.releasedate }}
+                {% elif manga.status == "N" %}
+                    Not released
+                {% else %}
+                    Not specified
+                {% endif %}
+            </div>
+            {% if manga.enddate %}
+            <div>End date: {{ manga.enddate }}</div>
+            {% endif %}
+            <div>Views: {{ manga.views|add:'+1' }}</div>
+            <div id="likes">Likes: {{ manga.likes.count }}</div>
+            {% if user.is_authenticated %}
+                <div><button class="btn btn-primary" id="like_button" value="{% url 'mangalike' manga.id %}"></button></div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

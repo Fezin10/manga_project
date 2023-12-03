@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.db.models import Count, OuterRef, Subquery
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -98,6 +98,28 @@ def index(request):
     # Get the most popular mangas that are finished or releasing
     mangas = Manga.objects.filter(status__in=['F', 'R']).annotate(num_likes=Count('likes')).order_by('-num_likes')
     return render(request, 'mangaweb/index.html', {'mangas': mangas})
+
+
+@login_required
+def like(request, manga_id):
+    try:
+        manga = Manga.objects.get(id=manga_id)
+    except:
+        return JsonResponse({'status': 'Manga entry not found'})
+    
+    if request.method == "GET":
+        manga.views += 1
+        manga.save()
+        return JsonResponse({'status': 'success', 'liked': manga.likes.filter(id=request.user.id).exists()})
+    else:
+        if manga.likes.filter(id=request.user.id).exists():
+            manga.likes.remove(request.user)
+            liked = False
+        else:
+            manga.likes.add(request.user)
+            liked = True
+
+        return JsonResponse({'status': 'success', 'liked': liked, 'likes': manga.likes.count()})
 
 
 def login_view(request):

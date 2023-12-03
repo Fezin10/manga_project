@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Function to create a preview for the image files sended in some pages
-    try {
         let preview = document.querySelector('#image_preview');
-        function preview_image(event) {
+        if (preview) {
+            function preview_image(event) {
             let input = event.target;
             preview.innerHTML = '';
             if (input.files && input.files.length > 0) {
@@ -56,7 +56,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         let image_input = document.querySelector('#image_input');
         image_input.addEventListener('change', preview_image);
-    } catch(error) {
-        console.log(error);
+        }
+
+
+    // Like button to the mangapage
+    like_button = document.querySelector("#like_button");
+    if (like_button) {
+        fetch(like_button.value)
+        .then(response => response.json())
+        .then(data => {
+            if (data['status'] == 'success') {
+                if (data['liked'] == 'true') {
+                    like_button.innerText = 'Unlike';
+                } else {
+                    like_button.innerText = 'Like';
+                }
+            } else {
+                console.log(data['status'])
+                alert('Something went wrong when retrieving like data')
+            }
+        })
+        like_button.addEventListener('click', () => {
+            fetch(like_button.value, {
+                method: "PUT",
+                headers: {
+                    'X-CSRFTOKEN': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data['status'] == 'success') {
+                    if (data['liked'] == 'true') {
+                        like_button.innerText = 'Unlike';
+                    } else {
+                        like_button.innerText = 'Like';
+                    }
+                    document.querySelector('#likes').innerText = `Likes: ${data['likes']}`;
+                }
+            })
+        })
     }
 })

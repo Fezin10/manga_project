@@ -50,7 +50,9 @@ class Manga(models.Model):
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     views = models.PositiveIntegerField(default=0)
     thumb = models.ImageField(upload_to=helper.manga_thumb, null=True)
-    likes = models.ManyToManyField(User, related_name='liked_manga')
+    likes = models.ManyToManyField(User, related_name='liked_manga', blank=True)
+    releasedate = models.DateField(null=True, blank=True)
+    enddate = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.name} id:{self.id}'

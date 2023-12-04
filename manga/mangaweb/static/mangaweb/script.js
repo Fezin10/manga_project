@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             if (data['status'] == 'success') {
-                if (data['liked'] == 'true') {
+                if (data['liked'] == true) {
                     like_button.innerText = 'Unlike';
                 } else {
                     like_button.innerText = 'Like';
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 if (data['status'] == 'success') {
-                    if (data['liked'] == 'true') {
+                    if (data['liked'] == true) {
                         like_button.innerText = 'Unlike';
                     } else {
                         like_button.innerText = 'Like';
@@ -96,4 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
             })
         })
     }
+
+    template_render_mobile()
 })
+
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}

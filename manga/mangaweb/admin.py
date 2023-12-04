@@ -3,7 +3,7 @@ from .models import *
 
 
 class chapterAdmin(admin.ModelAdmin):
-    list_display = ['manga', 'id']
+    list_display = ['manga', 'chapter_number']
 
 
 admin.site.register(User)

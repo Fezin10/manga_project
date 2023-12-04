@@ -25,6 +25,7 @@ class Banned(models.Model):
 # Content related fields
 class Chapter(models.Model):
     manga = models.ForeignKey('Manga', on_delete=models.CASCADE, related_name='chapters')
+    read = models.ManyToManyField(User, blank=True)
     chapter_number = models.PositiveSmallIntegerField()
 
 

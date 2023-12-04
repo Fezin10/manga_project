@@ -1,11 +1,12 @@
 {% extends "mangaweb/layout.html" %}
+{% load static %}
 {% block title %}- {{ manga.name }}{% endblock %}
 {% block body %}
 <h2>{{ manga.name }}</h2>
 <div class="container">
     <div class="row">
-        <div class="col-5"><img src="{{ manga.thumb.url }}" alt="{{ manga.name }} Thumbnail" class="img-fluid"></div>
-        <div class="col-7">
+        <div id="mangapage_thumb"><img src="{{ manga.thumb.url }}" alt="{{ manga.name }} Thumbnail" class="img-fluid"></div>
+        <div id="mangapage_content">
             <div>Author: {{ manga.author }}</div>
             <div>Genres:
                 <ul>
@@ -39,4 +40,17 @@
         </div>
     </div>
 </div>
+<br>
+<div class="container">
+    <div class="row">
+    {% for chapter in manga.chapters.all %}
+        <div class="col"><a href="{% url 'mangaread' manga.id chapter.chapter_number %}" 
+            {% if user.is_authenticated and user in chapter.read.all %} class="btn btn-dark"
+            {% else %} class="btn btn-primary"{% endif %}>{{ chapter.chapter_number|stringformat:"04d" }}</a></div>
+    {% empty %}
+        No chapters released
+    {% endfor %}
+    </div>
+</div>
+<script src="{% static 'mangaweb/mangapage.js' %}"></script>
 {% endblock %}

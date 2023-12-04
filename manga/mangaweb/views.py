@@ -51,7 +51,7 @@ def addchapter(request):
                 Page(chapter=chapter, page_number=i, page_content=image).save()
         else:
             return error('No images provided')
-        return HttpResponse('OK')
+        return HttpResponseRedirect(reverse('mangapage', args=[manga.name, manga.id]))
 
 
 @login_required
@@ -151,6 +151,10 @@ def mangapage(request, manganame, mangaid):
         except:
             raise Http404("Manga not found")
         return render(request, "mangaweb/mangapage.html", {"manga": manga})
+
+
+def mangaread(request, manga_id, chapter):
+    return HttpResponse(f'manga id: {manga_id}, chapter: {chapter}')
 
 
 def register_view(request):

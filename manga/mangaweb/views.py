@@ -64,10 +64,8 @@ def addmanga(request):
         def error(message):
             return render(request, 'mangaweb/addmanga.html', {'genres': Genre.objects.all().order_by('-genre'), 'message': message})
 
-        manga = Manga()
-        manga.name = request.POST["manga_name"].strip()
-        manga.author = request.user
-        manga.status = request.POST["status"]
+        manga = Manga(name=request.POST["manga_name"].strip(), author=request.user, status=request.POST["status"],
+                      releasedate=request.POST["releasedate"], enddate=request.POST["enddate"])
         try:
             thumb = request.FILES["thumb"]
         except:
@@ -83,13 +81,17 @@ def addmanga(request):
         if check == 'success':
             manga.save()
             manga.thumb = thumb
-            manga.save()
-            for genre in genres:
-                if len(genre) > 20:
-                    return error('Custom genre size is larger than 20 characters')
-                entry, created = Genre.objects.get_or_create(genre=genre.strip().capitalize())
-                manga.genres.add(entry)
-            return HttpResponseRedirect(reverse('addchapter'))
+            try:
+                manga.full_clean()
+                manga.save()
+                for genre in genres:
+                    if len(genre) > 20:
+                        return error('Custom genre size is larger than 20 characters')
+                    entry, created = Genre.objects.get_or_create(genre=genre.strip().capitalize())
+                    manga.genres.add(entry)
+                return HttpResponseRedirect(reverse('addchapter'))
+            except:
+                return error("Invalid information was given")
         else:
             return error(check)
 
@@ -108,8 +110,6 @@ def like(request, manga_id):
         return JsonResponse({'status': 'Manga entry not found'})
     
     if request.method == "GET":
-        manga.views += 1
-        manga.save()
         return JsonResponse({'status': 'success', 'liked': manga.likes.filter(id=request.user.id).exists()})
     else:
         if manga.likes.filter(id=request.user.id).exists():
@@ -150,10 +150,15 @@ def mangapage(request, manganame, mangaid):
             manga = Manga.objects.get(id=mangaid)
         except:
             raise Http404("Manga not found")
-        return render(request, "mangaweb/mangapage.html", {"manga": manga})
+        views = 0
+        for chapter in manga.chapters.all():
+            views += chapter.read.count()
+        chapters = manga.chapters.all().order_by('chapter_number')
+        return render(request, "mangaweb/mangapage.html", {"manga": manga, "views": views, "chapters": chapters})
 
 
 def mangaread(request, manga_id, chapter):
+    #TODO
     return HttpResponse(f'manga id: {manga_id}, chapter: {chapter}')
 
 

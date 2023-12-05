@@ -32,7 +32,7 @@
             {% if manga.enddate %}
             <div>End date: {{ manga.enddate }}</div>
             {% endif %}
-            <div>Views: {{ manga.views|add:'+1' }}</div>
+            <div>Views: {{ views }}</div>
             <div id="likes">Likes: {{ manga.likes.count }}</div>
             {% if user.is_authenticated %}
                 <div><button class="btn btn-primary" id="like_button" value="{% url 'mangalike' manga.id %}"></button></div>
@@ -43,7 +43,7 @@
 <br>
 <div class="container">
     <div class="row">
-    {% for chapter in manga.chapters.all %}
+    {% for chapter in chapters %}
         <div class="col"><a href="{% url 'mangaread' manga.id chapter.chapter_number %}" 
             {% if user.is_authenticated and user in chapter.read.all %} class="btn btn-dark"
             {% else %} class="btn btn-primary"{% endif %}>{{ chapter.chapter_number|stringformat:"04d" }}</a></div>

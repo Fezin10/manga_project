@@ -49,7 +49,6 @@ class Manga(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='works')
     genres = models.ManyToManyField(Genre)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
-    views = models.PositiveIntegerField(default=0)
     thumb = models.ImageField(upload_to=helper.manga_thumb, null=True)
     likes = models.ManyToManyField(User, related_name='liked_manga', blank=True)
     releasedate = models.DateField(null=True, blank=True)

@@ -13,7 +13,7 @@
         <span class="form-text">Max characters: 50</span>
     </div>
     <div class="mb-3">
-        <label for="genres" class="form-label">Genres</label>
+        <label for="genres" class="form-label">Genres - optional</label>
         <select class="form-select" size="5" multiple name="genres">
             {% for genre in genres %}
             <option value="{{ genre }}">{{ genre }}</option>
@@ -22,7 +22,7 @@
           <span class="form-text">CTRL+ left click to choose multiple genres</span>
     </div>
     <div class="mb-3">
-        <label for="custom-genres" class="form-label">Custom genres</label>
+        <label for="custom-genres" class="form-label">Custom genres - optional</label>
         <input type="text" name="custom_genre" class="form-control" placeholder="Genre1, genre2, genre3, etc">
         <span class="form-text">Use a comma to separate each genre</span> <br>
         <span class="form-text">Use this if the genre you want is not available, genre name shouldnt be larger than 20 characters</span> <br>
@@ -38,7 +38,17 @@
         </select>
     </div>
     <div class="mb-3">
-        <label for="formFile" class="form-label">Manga thumbnail</label>
+        <label for="releasedate" class="form-label">Release date - optional</label>
+        <input type="date" class="form-control" name="releasedate">
+        <span class="form-text">If not released yet, can be an expected release date</span>
+    </div>
+    <div>
+        <label for="enddate" class="form-label">End date - optional</label>
+        <input type="date" class="form-control" name="enddate">
+        <span class="form-text">If still releasing, can be the expected end date</span>
+    </div>
+    <div class="mb-3">
+        <label for="formFile" class="form-label">Manga thumbnail - optional</label>
         <input class="form-control" type="file" name="thumb" accept="image/*" id="image_input">
         <span class="form-text">Max image size: 5MB</span>
     </div>

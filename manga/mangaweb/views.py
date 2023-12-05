@@ -86,7 +86,6 @@ def addmanga(request):
             try:
                 manga.full_clean()
             except:
-                del manga
                 return error("Invalid information was given")
             else:
                 manga.save()

@@ -64,8 +64,11 @@ def addmanga(request):
         def error(message):
             return render(request, 'mangaweb/addmanga.html', {'genres': Genre.objects.all().order_by('-genre'), 'message': message})
 
-        manga = Manga(name=request.POST["manga_name"].strip(), author=request.user, status=request.POST["status"],
-                      releasedate=request.POST["releasedate"], enddate=request.POST["enddate"])
+        manga = Manga(name=request.POST["manga_name"].strip(), author=request.user, status=request.POST["status"])
+        releasedate = request.POST["releasedate"]
+        if releasedate: manga.releasedate = releasedate
+        enddate = request.POST["enddate"]
+        if enddate: manga.enddate = enddate
         try:
             thumb = request.FILES["thumb"]
         except:
@@ -79,10 +82,13 @@ def addmanga(request):
             return error('You must provide at least 1 genre')
         check = helper.manga_check(manga, thumb)
         if check == 'success':
-            manga.save()
             manga.thumb = thumb
             try:
                 manga.full_clean()
+            except:
+                del manga
+                return error("Invalid information was given")
+            else:
                 manga.save()
                 for genre in genres:
                     if len(genre) > 20:
@@ -90,16 +96,15 @@ def addmanga(request):
                     entry, created = Genre.objects.get_or_create(genre=genre.strip().capitalize())
                     manga.genres.add(entry)
                 return HttpResponseRedirect(reverse('addchapter'))
-            except:
-                return error("Invalid information was given")
         else:
             return error(check)
 
 
 def index(request):
     # Get the most popular mangas that are finished or releasing
-    mangas = Manga.objects.filter(status__in=['F', 'R']).annotate(num_likes=Count('likes')).order_by('-num_likes')
-    return render(request, 'mangaweb/index.html', {'mangas': mangas})
+    mangas = Manga.objects.filter(status__in=['F', 'R']).annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
+    print(mangas)
+    return render(request, 'mangaweb/index.html', {'mangas': mangas})  
 
 
 @login_required

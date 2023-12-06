@@ -58,11 +58,12 @@ def addchapter(request):
 def addmanga(request):
     if not request.user.author:
         raise Http404("Only authors can add mangas")
+    genre_entries = Genre.objects.all().order_by('genre')
     if request.method == 'GET':
-        return render(request, 'mangaweb/addmanga.html', {'genres': Genre.objects.all().order_by('-genre')})
+        return render(request, 'mangaweb/addmanga.html', {'genres': genre_entries})
     elif request.method == 'POST':
         def error(message):
-            return render(request, 'mangaweb/addmanga.html', {'genres': Genre.objects.all().order_by('-genre'), 'message': message})
+            return render(request, 'mangaweb/addmanga.html', {'genres': genre_entries, 'message': message})
 
         manga = Manga(name=request.POST["manga_name"].strip(), author=request.user, status=request.POST["status"])
         releasedate = request.POST["releasedate"]
@@ -103,7 +104,46 @@ def index(request):
     # Get the most popular mangas that are finished or releasing
     mangas = Manga.objects.filter(status__in=['F', 'R']).annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
     print(mangas)
-    return render(request, 'mangaweb/index.html', {'mangas': mangas})  
+    return render(request, 'mangaweb/index.html', {'mangas': mangas, 'genres': Genre.objects.all().order_by('genre')})
+
+
+def mangas(request):
+    def error(message):
+        return render(request, 'mangaweb/index.html', {'mangas': mangas, 'genres': dropdown_genres, 'message': message})
+
+    # Base variables
+    mangas = Manga.objects.all()
+    dropdown_genres = Genre.objects.all().order_by('genre')
+
+    # change the mangas query depending on the filters requested by the user
+    if request.user.is_authenticated:
+        if request.GET.get('liked'):
+            mangas = mangas.filter(likes=request.user)
+        if request.GET.get('authors'):
+            mangas = mangas.filter(author__in=request.user.following.all())
+
+    status = request.GET.getlist('status')
+    if status:
+        mangas = mangas.filter(status__in=status)
+
+    genres = request.GET.getlist('genres')
+    if genres:
+        mangas = mangas.filter(genres__in=dropdown_genres.filter(genre__in=genres))
+
+    sort = request.GET.get('sort')
+    if sort:
+        if sort == 'az':
+            mangas = mangas.order_by('name')
+        elif sort == 'za':
+            mangas = mangas.order_by('-name')
+        elif sort == 'imp':
+            mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('num_likes', 'num_views', 'name')
+        elif sort == 'pop':
+            mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
+    else:
+        mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
+
+    return render(request, 'mangaweb/index.html', {'mangas': mangas, 'genres': dropdown_genres})
 
 
 @login_required

@@ -9,6 +9,10 @@
     margin-bottom: 4rem;
 }
 
+.filter_dropdown {
+    display: inline-block;
+}
+
 .index_image {
     min-width: 10rem;
     width: 12rem;

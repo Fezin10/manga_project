@@ -3,6 +3,74 @@
 {% block title %}- Home{% endblock %}
 {% block body %}
 <h2>Popular mangas</h2>
+{% if message %}
+<h3>{{ message }}</h3>
+{% endif %}
+<br>
+<h4>Filters</h4>
+<div>
+    <form action="{% url 'mangas' %}">
+        <div class="dropdown filter_dropdown">
+            <button class="btn btn-primary dropdown-toogle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Filters</button>
+            <ul class="dropdown-menu">
+                <li>Status</li>
+                <li>
+                    <input class="form-check-input" type="checkbox" id="finished" name="status" value="F">
+                    <label class="form-check-label" for="finished">Finished</label>
+                </li>
+                <li>
+                    <input class="form-check-input" type="checkbox" id="releasing" name="status" value="R">
+                    <label class="form-check-label" for="releasing">Releasing</label>
+                </li>
+                <li>
+                    <input class="form-check-input" type="checkbox" id="notreleased" name="status" value="N">
+                    <label class="form-check-label" for="notreleased">Not Released</label>
+                </li>
+                {% if user.is_authenticated %}
+                    <li><hr class="dropdown-divider">User Liked</li>
+                    <li>
+                        <input class="form-check-input" type="checkbox" id="liked" name="liked">
+                        <label class="form-check-label" for="liked">Liked</label>
+                    </li>
+                    <li>
+                        <input class="form-check-input" type="checkbox" id="authors" name="authors">
+                        <label class="form-check-label" for="authors">Liked authors</label>
+                    </li>
+                {% endif %}
+                <li><hr class="dropdown-divider">Sort</li>
+                <li>
+                    <input class="form-check-input" type="radio" name="sort" id="az" value="az">
+                    <label class="form-check-label" for="az">A-Z</label>
+                </li>
+                <li>
+                    <input class="form-check-input" type="radio" name="sort" id="za" value="za">
+                    <label class="form-check-label" for="za">Z-A</label>
+                </li>
+                <li>
+                    <input class="form-check-input" type="radio" name="sort" id="popularity" value="pop">
+                    <label class="form-check-label" for="popularity">Most Popular</label>
+                </li>
+                <li>
+                    <input class="form-check-input" type="radio" name="sort" id="impopularity" value="imp">
+                    <label class="form-check-label" for="impopularity">Less Popular</label>
+                </li>
+            </ul>
+        </div>
+        <div class="dropdown filter_dropdown">
+            <button class="btn btn-primary dropdown-toogle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Genre</button>
+            <ul class="dropdown-menu">
+                {% for genre in genres %}
+                    <li>
+                        <input class="form-check-input" type="checkbox" name="genres" id="genre-{{ genre }}" value="{{ genre }}">
+                        <label class="form-check-label" for="genre-{{ genre }}">{{ genre }}</label>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <button type="submit" class="btn btn-primary">Apply</button>
+    </form>
+</div>
+<br>
 <div class="container text-center">
     <div class="row">
         {% for manga in mangas %}

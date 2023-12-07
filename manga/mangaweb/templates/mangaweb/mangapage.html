@@ -5,7 +5,8 @@
 <h2>{{ manga.name }}</h2>
 <div class="container">
     <div class="row">
-        <div id="mangapage_thumb"><img src="{{ manga.thumb.url }}" alt="{{ manga.name }} Thumbnail" class="img-fluid"></div>
+        <div id="mangapage_thumb"><img src="{% if manga.thumb %}{{ manga.thumb.url }}{% else %}{% static 'mangaweb/images/image_placeholder.webp' %}{% endif %}"
+             alt="{{ manga.name }} Thumbnail" class="img-thumbnail mangapage_image"></div>
         <div id="mangapage_content">
             <div>Author: {{ manga.author }}</div>
             <div>Genres:

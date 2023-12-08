@@ -1,0 +1,52 @@
+{% extends "mangaweb/layout.html" %}
+{% load static %}
+{% block title %}- {{ pageuser.username }}{% endblock %}
+{% block body %}
+<h2>{{ pageuser.username }}</h2>
+<div class="container">
+    <div class="row">
+        <div id="page_image"><img src="{% if pageuser.icon %}{{ pageuser.icon.url }}{% else %}{% static 'mangaweb/images/image_placeholder.webp' %}{% endif %}"
+             alt="{{ pageuser.username }} icon" class="img-thumbnail pageuser_icon"></div>
+        <div id="page_content">
+            <div>Account created at: {{ pageuser.date_joined|date:"Y-m-d" }}</div>
+            <div>Premium: {{ pageuser.premium }}</div>
+            <div>Staff: {{ pageuser.moderator }}</div>
+            <div>Author: {{ pageuser.author }}</div>
+            {% if pageuser.author %}
+            <div>Works: {{ pageuser.works.count }}</div>
+            {% endif %}
+            <div id="followers">Followers: {{ pageuser.followed_by.count }}</div>
+            <div>Following: {{ pageuser.following.count }}</div>
+            {% if user.is_authenticated and user != pageuser %}
+            <div><button id="follow_button" class="btn btn-primary" value="{% url 'follow' pageuser.id %}"></button></div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% if pageuser.author %}
+<h3>Works:</h3>
+    <div class="container">
+        <div class="row">
+            {% for manga in mangas %}
+                <div class="col">
+                    <figure class="figure">
+                        <a href="{% url 'mangapage' manga.name manga.id %}">
+                            <img
+                            {% if manga.thumb %}
+                            src="{{ manga.thumb.url }}"
+                            {% else %}
+                            src="{% static 'mangaweb/images/image_placeholder.webp' %}"
+                            {% endif %}
+                            class="figure-img img-thumbnail index_image" alt="{{ manga.name }} thumbnail"
+                            >
+                        </a>
+                        <figcaption class="figure-caption text-center">{{ manga.name }}</figcaption>
+                    </figure>
+                </div>
+            {% empty %}
+             <div class="col">This user don't have any posted mangas</div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

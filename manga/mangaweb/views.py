@@ -100,6 +100,29 @@ def addmanga(request):
             return error(check)
 
 
+@login_required
+def follow(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except:
+        return JsonResponse({'status': 'Invalid user ID'})
+    
+    if user == request.user:
+        return JsonResponse({'status': 'Can not follow yourself'})
+
+    if request.method == "GET":
+        return JsonResponse({'status': 'success', 'following': user.followed_by.filter(id=request.user.id).exists()})
+    else:
+        if user.followed_by.filter(id=request.user.id).exists():
+            user.followed_by.remove(request.user)
+            following = False
+        else:
+            user.followed_by.add(request.user)
+            following = True
+        return JsonResponse({'status': 'success', 'following': following, 'following_count': user.followed_by.count()})
+
+
+
 def index(request):
     # Get the most popular mangas that are finished or releasing
     mangas = Manga.objects.filter(status__in=['F', 'R']).annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
@@ -247,3 +270,16 @@ def register_view(request):
         
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
+    
+
+def userpage(request, user_id):
+    if request.method == 'GET':
+        try:
+            user = User.objects.get(id=user_id)
+        except:
+            raise Http404('User not found')
+        if user.author:
+            mangas = Manga.objects.filter(author=user)
+        else:
+            mangas = None
+        return render(request, 'mangaweb/user.html', {'pageuser': user, 'mangas': mangas})

@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Like button to the mangapage
-    like_button = document.querySelector("#like_button");
+    let like_button = document.querySelector("#like_button");
     if (like_button) {
         fetch(like_button.value)
         .then(response => response.json())
@@ -86,6 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 if (data['status'] == 'success') {
+                    console.log(data['status'])
+                    alert('Can not complete the like process')
+                } else {
                     if (data['liked'] == true) {
                         like_button.innerText = 'Unlike';
                     } else {
@@ -97,7 +100,54 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    template_render_mobile()
+
+    let follow_button = document.querySelector('#follow_button');
+    if (follow_button) {
+        fetch(follow_button.value)
+        .then(response => response.json())
+        .then(data => {
+            if (data['status'] !== 'success') {
+                console.log(data['status']);
+                alert('Can not retrieve the following data from the server');
+            } else {
+                console.log(data['following'])
+                if (data['following'] == true) {
+                    follow_button.innerText = 'Unfollow';
+                } else {
+                    follow_button.innerText = 'Follow';
+                }
+            }
+        })
+        follow_button.addEventListener('click', () => {
+            fetch(follow_button.value, {
+                method: "PUT",
+                headers: {
+                    'X-CSRFTOKEN': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data['status'] !== 'success') {
+                    console.log(data['status']);
+                    alert('Fail when trying to un/follow the user');
+                } else {
+                    console.log(data['following'])
+                    if (data['following'] == true) {
+                        follow_button.innerText = 'Unfollow';
+                    } else {
+                        follow_button.innerText = 'Follow';
+                    }
+                    document.querySelector('#followers').innerText = `Followers: ${data['following_count']}`
+                }
+            })
+        })
+    }
+
+
+    if (!isMobileDevice()) {
+        document.getElementById('page_image').className = 'col';
+        document.getElementById('page_content').className = 'col';
+    }
 })
 
 function isMobileDevice() {

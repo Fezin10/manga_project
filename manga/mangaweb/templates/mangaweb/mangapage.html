@@ -8,7 +8,7 @@
         <div id="page_image"><img src="{% if manga.thumb %}{{ manga.thumb.url }}{% else %}{% static 'mangaweb/images/image_placeholder.webp' %}{% endif %}"
              alt="{{ manga.name }} Thumbnail" class="img-thumbnail mangapage_image"></div>
         <div id="page_content">
-            <div>Author: {{ manga.author }}</div>
+            <div>Author: <a href="{% url 'userpage' manga.author.id %}">{{ manga.author }}</a></div>
             <div>Genres:
                 <ul>
                     {% for genre in manga.genres.all %}
@@ -32,6 +32,11 @@
             </div>
             {% if manga.enddate %}
             <div>End date: {{ manga.enddate }}</div>
+            {% endif %}
+            {% if manga.sinopse %}
+                <div class="sinopse">Sinopse: {{ manga.sinopse }}</div>
+            {% else %}
+                <div>Sinopse: Not provided</div>
             {% endif %}
             <div>Views: {{ views }}</div>
             <div id="likes">Likes: {{ manga.likes.count }}</div>

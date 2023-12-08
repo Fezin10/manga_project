@@ -37,6 +37,11 @@
     object-fit: scale-down;
 }
 
+.sinopse {
+    max-width: 40em;
+    word-wrap: break-word;
+}
+
 #image_preview {
     margin-bottom: 2rem;
 }

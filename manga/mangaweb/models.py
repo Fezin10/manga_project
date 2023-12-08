@@ -50,6 +50,7 @@ class Manga(models.Model):
     genres = models.ManyToManyField(Genre)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     thumb = models.ImageField(upload_to=helper.manga_thumb, null=True, blank=True)
+    sinopse = models.TextField(max_length=300, null=True, blank=True)
     likes = models.ManyToManyField(User, related_name='liked_manga', blank=True)
     releasedate = models.DateField(null=True, blank=True)
     enddate = models.DateField(null=True, blank=True)

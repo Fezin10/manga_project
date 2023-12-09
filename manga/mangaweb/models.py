@@ -87,8 +87,8 @@ def delete_chapter(sender, instance, **kwargs):
 @receiver(post_delete, sender=Manga)
 def delete_manga(sender, instance, **kwargs):
     manga_directory = os.path.join('media/manga', instance.name)
-    manga_count = len(os.listdir(manga_directory))
     try:
+        manga_count = len(os.listdir(manga_directory))
         if manga_count == 1:
             shutil.rmtree(manga_directory)
         else:

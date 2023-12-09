@@ -38,6 +38,12 @@
         </select>
     </div>
     <div class="mb-3">
+        <label for="sinopse" class="form-label">Sinopse</label>
+        <textarea class="form-control" name="sinopse" id="sinopse">{{ manga.sinopse }}</textarea>
+        <span class="form-text">Max 300 characters</span><br>
+        <span id="counter"></span>
+    </div>
+    <div class="mb-3">
         <label for="releasedate" class="form-label">Release date - optional</label>
         <input type="date" class="form-control" name="releasedate" value="{{ manga.releasedate|date:'Y-m-d' }}">
         <span class="form-text">If not released yet, can be an expected release date</span>
@@ -53,6 +59,7 @@
         <span class="form-text">Max image size: 5MB</span>
     </div>
     <div id="image_preview" class="container text-center">
+        {% if manga.thumb %}
         <div class="row">
             <div class="col-3">
                 <figure class="figure">
@@ -61,6 +68,7 @@
                 </figure>
             </div>
         </div>
+        {% endif %}
     </div>
     <input class="btn btn-primary" type="submit" value="Submit manga entry">
 </form>

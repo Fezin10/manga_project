@@ -59,77 +59,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
 
-    // Like button to the mangapage
-    let like_button = document.querySelector("#like_button");
-    if (like_button) {
-        fetch(like_button.value)
-        .then(response => response.json())
-        .then(data => {
-            if (data['status'] == 'success') {
-                if (data['liked'] == true) {
-                    like_button.innerText = 'Unlike';
-                } else {
-                    like_button.innerText = 'Like';
-                }
-            } else {
-                console.log(data['status'])
-                alert('Something went wrong when retrieving like data')
-            }
-        })
-        like_button.addEventListener('click', () => {
-            fetch(like_button.value, {
-                method: "PUT",
-                headers: {
-                    'X-CSRFTOKEN': csrftoken
-                }
-            })
+        // Like button to the mangapage
+        let like_button = document.querySelector("#like_button");
+        if (like_button) {
+            fetch(like_button.value)
             .then(response => response.json())
             .then(data => {
                 if (data['status'] == 'success') {
-                    console.log(data['status'])
-                    alert('Can not complete the like process')
-                } else {
                     if (data['liked'] == true) {
                         like_button.innerText = 'Unlike';
                     } else {
                         like_button.innerText = 'Like';
                     }
-                    document.querySelector('#likes').innerText = `Likes: ${data['likes']}`;
-                }
-            })
-        })
-    }
-
-
-    let follow_button = document.querySelector('#follow_button');
-    if (follow_button) {
-        fetch(follow_button.value)
-        .then(response => response.json())
-        .then(data => {
-            if (data['status'] !== 'success') {
-                console.log(data['status']);
-                alert('Can not retrieve the following data from the server');
-            } else {
-                console.log(data['following'])
-                if (data['following'] == true) {
-                    follow_button.innerText = 'Unfollow';
                 } else {
-                    follow_button.innerText = 'Follow';
-                }
-            }
-        })
-        follow_button.addEventListener('click', () => {
-            fetch(follow_button.value, {
-                method: "PUT",
-                headers: {
-                    'X-CSRFTOKEN': csrftoken
+                    console.log(data['status'])
+                    alert('Something went wrong when retrieving like data')
                 }
             })
+            like_button.addEventListener('click', () => {
+                fetch(like_button.value, {
+                    method: "PUT",
+                    headers: {
+                        'X-CSRFTOKEN': csrftoken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data['status'] == 'success') {
+                        console.log(data['status'])
+                        alert('Can not complete the like process')
+                    } else {
+                        if (data['liked'] == true) {
+                            like_button.innerText = 'Unlike';
+                        } else {
+                            like_button.innerText = 'Like';
+                        }
+                        document.querySelector('#likes').innerText = `Likes: ${data['likes']}`;
+                    }
+                })
+            })
+        }
+
+
+        let follow_button = document.querySelector('#follow_button');
+        if (follow_button) {
+            fetch(follow_button.value)
             .then(response => response.json())
             .then(data => {
                 if (data['status'] !== 'success') {
                     console.log(data['status']);
-                    alert('Fail when trying to un/follow the user');
+                    alert('Can not retrieve the following data from the server');
                 } else {
                     console.log(data['following'])
                     if (data['following'] == true) {
@@ -137,21 +116,52 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         follow_button.innerText = 'Follow';
                     }
-                    document.querySelector('#followers').innerText = `Followers: ${data['following_count']}`
                 }
             })
-        })
-    }
-
-
-    if (!isMobileDevice()) {
-        try {
-            document.getElementById('page_image').className = 'col';
-            document.getElementById('page_content').className = 'col';
-        } catch {
-            null
+            follow_button.addEventListener('click', () => {
+                fetch(follow_button.value, {
+                    method: "PUT",
+                    headers: {
+                        'X-CSRFTOKEN': csrftoken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data['status'] !== 'success') {
+                        console.log(data['status']);
+                        alert('Fail when trying to un/follow the user');
+                    } else {
+                        console.log(data['following'])
+                        if (data['following'] == true) {
+                            follow_button.innerText = 'Unfollow';
+                        } else {
+                            follow_button.innerText = 'Follow';
+                        }
+                        document.querySelector('#followers').innerText = `Followers: ${data['following_count']}`
+                    }
+                })
+            })
         }
-    }
+
+
+        let counter = document.querySelector('#counter');
+        if (counter) {
+            let sinopse = document.querySelector('#sinopse');
+            counter.innerText = 300 - sinopse.value.length + ' characters left.';
+            sinopse.addEventListener('input', () => {
+                counter.innerText = 300 - sinopse.value.length + ' characters left.';
+            })
+        }
+
+
+        if (!isMobileDevice()) {
+            try {
+                document.getElementById('page_image').className = 'col';
+                document.getElementById('page_content').className = 'col';
+            } catch {
+                null
+            }
+        }
 })
 
 function isMobileDevice() {

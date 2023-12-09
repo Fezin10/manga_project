@@ -69,7 +69,7 @@ def addmanga(request):
         def error(message):
             return render(request, 'mangaweb/addmanga.html', {'genres': genre_entries, 'message': message})
 
-        manga = Manga(name=request.POST["manga_name"].strip(), author=request.user, status=request.POST["status"])
+        manga = Manga(name=request.POST["manga_name"].strip(), author=request.user, status=request.POST["status"], sinopse=request.POST["sinopse"])
         releasedate = request.POST["releasedate"]
         if releasedate: manga.releasedate = releasedate
         enddate = request.POST["enddate"]
@@ -85,7 +85,7 @@ def addmanga(request):
         if custom and len(custom) > 1 or custom[0] != '': genres.extend(custom)
         if len(genres) < 1:
             return error('You must provide at least 1 genre')
-        check = helper.manga_check(manga, thumb)
+        check = helper.manga_check(thumb)
         if check == 'success':
             manga.thumb = thumb
             try:
@@ -126,6 +126,7 @@ def edit(request, manga_id):
 
         # Setting the new fields
         manga.status = request.POST['status']
+        manga.sinopse = request.POST['sinopse']
         if request.POST["releasedate"]: manga.releasedate = request.POST["releasedate"]
         if request.POST["enddate"]: manga.enddate = request.POST["enddate"]
         try:
@@ -148,7 +149,7 @@ def edit(request, manga_id):
 
 
         if check == 'success':
-            manga.thumb = thumb
+            if thumb: manga.thumb = thumb
             try:
                 manga.full_clean()
             except:

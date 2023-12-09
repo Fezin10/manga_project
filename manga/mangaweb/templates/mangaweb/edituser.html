@@ -1,0 +1,49 @@
+{% extends "mangaweb/layout.html" %}
+
+{% block title %}- Edit User{% endblock %}
+{% block body %}
+
+    <h2>Editing user</h2>
+
+    {% if message %}
+        <div class="message">{{ message }}</div>
+    {% endif %}
+
+    <form action="{% url 'edituser' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <input class="form-control" autofocus type="text" name="username" value="{{ user.username }}">
+        </div>
+        <div class="mb-3">
+            <label for="old_password" class="form-label">If you want to change the password, input your old password bellow.</label>
+            <input class="form-control" type="password" name="old_password" placeholder="Current Password" id="old_password">
+        </div>
+        <div class="mb-3">
+            <input class="form-control" type="password" name="password" placeholder="New Password" aria-describedby="passwordHelpInline">
+            <span id="passwordHelpInline" class="form-text">Must be at least 4 characters long.</span>
+        </div>
+        <div class="mb-3">
+            <input class="form-control" type="password" name="confirmation" placeholder="Confirm New Password">
+        </div>
+        <div class="mb-3">
+            <label for="image_input" class="form-label">Icon</label>
+            <input class="form-control" type="file" name="icon" accept="image/*" id="image_input">
+            <span id="iconhelpinline" class="form-text">Optional - Choose an icon, size limit is 2 MB.</span>
+        </div>
+
+        <div id="image_preview" class="container text-center">
+            {% if user.icon %}
+            <div class="row">
+                <div class="col-3">
+                    <figure class="figure">
+                        <img src="{{ user.icon.url }}" alt="Your current icon" class="figure-img img-fluid rounded">
+                        <figcaption class="figure-caption">Your current icon</figcaption>
+                    </figure>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <input class="btn btn-primary" type="submit" value="Save">
+    </form>
+
+{% endblock %}

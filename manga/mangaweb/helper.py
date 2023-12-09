@@ -1,15 +1,28 @@
 import os
-from django.core.files.images import ImageFile
+from django.contrib.auth.hashers import check_password
+from django_ratelimit.decorators import ratelimit
 from .models import *
 
+
+@ratelimit(key='user', rate='1/2d', block=True)
+def change_password(user, old, new, check):
+    if check_password(old):
+        if new == check and len(new) > 4:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
 # check if a given manga have correct data
-def manga_check(image):
+def image_size_validation(image, size):
     if image != None:
         if not image.content_type.startswith('image'):
-            return 'Invalid file type for the image'
-        if image.size > 5242880:
-            return 'Invalid image size'
-    return 'success'
+            return False
+        if image.size > size*1024*1024:
+            return False
+    return True
 
 
 # generate the path to store the thumb image of some manga

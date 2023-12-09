@@ -1,3 +1,3 @@
 os
 shutil
-django-mobileesp
+django_ratelimit

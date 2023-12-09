@@ -17,8 +17,12 @@
             {% endif %}
             <div id="followers">Followers: {{ pageuser.followed_by.count }}</div>
             <div>Following: {{ pageuser.following.count }}</div>
-            {% if user.is_authenticated and user != pageuser %}
-            <div><button id="follow_button" class="btn btn-primary" value="{% url 'follow' pageuser.id %}"></button></div>
+            {% if user.is_authenticated %}
+                {% if user != pageuser %}
+                    <div><button id="follow_button" class="btn btn-primary" value="{% url 'follow' pageuser.id %}"></button></div>
+                {% else %}
+                    <div><a class="btn btn-primary" href="{% url 'edituser' %}">Edit your profile</a></div>
+                {% endif %}
             {% endif %}
         </div>
     </div>

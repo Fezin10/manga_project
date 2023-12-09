@@ -8,6 +8,7 @@ from django.core.files.storage import default_storage
 from django.db import IntegrityError
 from django.db.models import Count, OuterRef, Subquery
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
+from django_ratelimit.exceptions import Ratelimited
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -85,8 +86,8 @@ def addmanga(request):
         if custom and len(custom) > 1 or custom[0] != '': genres.extend(custom)
         if len(genres) < 1:
             return error('You must provide at least 1 genre')
-        check = helper.manga_check(thumb)
-        if check == 'success':
+        check = helper.image_size_validation(thumb, 5)
+        if check:
             manga.thumb = thumb
             try:
                 manga.full_clean()
@@ -101,7 +102,7 @@ def addmanga(request):
                     manga.genres.add(entry)
                 return HttpResponseRedirect(reverse('addchapter'))
         else:
-            return error(check)
+            return error('Invalid image')
 
 
 @login_required
@@ -141,14 +142,14 @@ def edit(request, manga_id):
         if custom and len(custom) > 1 or custom[0] != '': genres.extend(custom)
         if len(genres) < 1:
             return error('You must provide at least 1 genre')
-        check = helper.manga_check(thumb)
+        check = helper.image_size_validation(thumb, 5)
 
         # delete the older image in case a new one is provided
-        if thumb and check == 'success' and manga.thumb:
+        if thumb and check and manga.thumb:
             default_storage.delete(manga.thumb.path)
 
 
-        if check == 'success':
+        if check:
             if thumb: manga.thumb = thumb
             try:
                 manga.full_clean()
@@ -163,8 +164,46 @@ def edit(request, manga_id):
                     manga.genres.add(entry)
                 return HttpResponseRedirect(reverse('addchapter'))
         else:
-            return error(check)
+            return error('Invalid image')
     
+
+@login_required
+def edituser(request):
+    if request.method == 'GET':
+        return render(request, 'mangaweb/edituser.html')
+    else:
+        def error(message):
+            return render(request, 'mangaweb/edituser.html', {'message': message})
+
+        user = request.user
+
+        if request.POST["old_password"]:
+            try:
+                if not helper.change_password(user, request.POST["old_password"], request.POST["password"], request.POST["confirmation"]):
+                    return error('Cant change the password')
+                else:
+                    user.set_password(request.POST["password"])
+            except Ratelimited:
+                return error(f'Rate limit exceeded for changing password')
+    
+        username = request.POST["username"]
+        if username:
+            if not User.objects.filter(username=username).exists():
+                user.username = username
+
+        icon = request.FILES.get("icon")
+        if icon:
+            if not helper.image_size_validation(icon, 2):
+                return error("Invalid icon")
+            else:
+                # delete the older icon in case a new one is provided
+                if icon and user.icon:
+                    default_storage.delete(user.icon.path)
+                user.icon = icon
+
+        user.save()
+        logout(request)
+        return HttpResponseRedirect(reverse('login'))
 
 
 @login_required
@@ -232,6 +271,7 @@ def login_view(request):
             return render(request, "mangaweb/login.html", {"message": "Invalid username and/or password."})
 
 
+@login_required
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('index'))
@@ -319,10 +359,8 @@ def register_view(request):
 
         # validation of the icon, password and email
         if icon:
-            if not icon.content_type.startswith('image'):
-                return error("Invalid file type.")
-            if icon.size > 2097152:
-                return error("Image limit is 2 MB.")
+            if not helper.image_size_validation(icon, 2):
+                return error("invalid image")
         if len(password) < 4:
             return error("Password must be at least 4 characters long.")
         if password != confirmation:

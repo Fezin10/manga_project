@@ -16,7 +16,8 @@ urlpatterns = [
     path("mangaread/<int:manga_id>/<int:chapter>", views.mangaread, name="mangaread"),
     path("mangas", views.mangas, name="mangas"),
     path("userpage/<int:user_id>", views.userpage, name="userpage"),
-    path("follow/<int:user_id>", views.follow, name="follow")
+    path("follow/<int:user_id>", views.follow, name="follow"),
+    path("editmanga/<int:manga_id>", views.edit, name="editmanga")
 ]
 
 if settings.DEBUG:

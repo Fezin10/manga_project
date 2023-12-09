@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         reader.onload = function(e) {
                             let image = document.createElement('img');
                             image.src = e.target.result;
-                            image.alt = `${i} image preview`;
+                            image.alt = `${i+1} image preview`;
                             image.className = "figure-img img-fluid rounded";
                             figure.appendChild(image);
                             figure.appendChild(figcaption);
@@ -145,8 +145,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     if (!isMobileDevice()) {
-        document.getElementById('page_image').className = 'col';
-        document.getElementById('page_content').className = 'col';
+        try {
+            document.getElementById('page_image').className = 'col';
+            document.getElementById('page_content').className = 'col';
+        } catch {
+            null
+        }
     }
 })
 

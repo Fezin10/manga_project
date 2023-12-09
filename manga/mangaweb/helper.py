@@ -3,11 +3,7 @@ from django.core.files.images import ImageFile
 from .models import *
 
 # check if a given manga have correct data
-def manga_check(manga, image):
-    if not (1 <= len(manga.name) <= 50):
-        return 'Manga name not provided or larger than 50 characters'
-    if manga.status not in ['F', 'R', 'N']:
-        return 'Invalid manga status'
+def manga_check(image):
     if image != None:
         if not image.content_type.startswith('image'):
             return 'Invalid file type for the image'

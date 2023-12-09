@@ -1,6 +1,10 @@
+import os
+
 from django import forms
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.files.storage import default_storage
 from django.db import IntegrityError
 from django.db.models import Count, OuterRef, Subquery
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
@@ -98,6 +102,68 @@ def addmanga(request):
                 return HttpResponseRedirect(reverse('addchapter'))
         else:
             return error(check)
+
+
+@login_required
+def edit(request, manga_id):
+    # validation
+    if not request.user.author:
+        raise Http404()
+    try:
+        manga = Manga.objects.get(id=manga_id)
+    except:
+        raise Http404("Manga not found")
+    if request.user != manga.author:
+        raise Http404("Manga not found")
+    
+    if request.method == "GET":
+        genres = Genre.objects.all().order_by('genre')
+        return render(request, "mangaweb/edit.html", {'manga': manga, 'genres': genres})
+    else:
+        def error(message):
+            return render(request, 'mangaweb/edit.html', {'genres': Genre.objects.all().order_by('genre'), 'message': message})
+
+
+        # Setting the new fields
+        manga.status = request.POST['status']
+        if request.POST["releasedate"]: manga.releasedate = request.POST["releasedate"]
+        if request.POST["enddate"]: manga.enddate = request.POST["enddate"]
+        try:
+            thumb = request.FILES["thumb"]
+        except:
+            thumb = None
+        genres = request.POST.getlist("genres")
+        custom = request.POST["custom_genre"].split(',')
+        
+
+        # check if the custom genre exists and them add all genres to the manga, create them if dont exist
+        if custom and len(custom) > 1 or custom[0] != '': genres.extend(custom)
+        if len(genres) < 1:
+            return error('You must provide at least 1 genre')
+        check = helper.manga_check(thumb)
+
+        # delete the older image in case a new one is provided
+        if thumb and check == 'success' and manga.thumb:
+            default_storage.delete(manga.thumb.path)
+
+
+        if check == 'success':
+            manga.thumb = thumb
+            try:
+                manga.full_clean()
+            except:
+                return error("Invalid information was given")
+            else:
+                manga.save()
+                for genre in genres:
+                    if len(genre) > 20:
+                        return error('Custom genre size is larger than 20 characters')
+                    entry, created = Genre.objects.get_or_create(genre=genre.strip().capitalize())
+                    manga.genres.add(entry)
+                return HttpResponseRedirect(reverse('addchapter'))
+        else:
+            return error(check)
+    
 
 
 @login_required

@@ -42,6 +42,7 @@
             <div id="likes">Likes: {{ manga.likes.count }}</div>
             {% if user.is_authenticated %}
                 <div><button class="btn btn-primary" id="like_button" value="{% url 'mangalike' manga.id %}"></button></div>
+                {% if user == manga.author %}<br><div><a class="btn btn-primary" href="{% url 'editmanga' manga.id %}">Edit</a></div>{% endif %}
             {% endif %}
         </div>
     </div>

@@ -1,22 +1,22 @@
 {% extends "mangaweb/layout.html" %}
-{% block title %}- Add Manga{% endblock %}
+{% block title %}- Edit Manga{% endblock %}
 {% block body %}
-<h2>Create a new manga entry</h2>
+<h2>Edit an manga entry</h2>
 {% if message %}
     <h3 class="message">{{ message }}</h3>
 {% endif %}
-<form action="{% url 'addmanga' %}" method="post" enctype="multipart/form-data">
+<form action="{% url 'editmanga' manga.id %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="mb-3">
         <label for="manga_name" class="form-label">Manga name</label>
-        <input type="text" name="manga_name" class="form-control" required placeholder="Name">
-        <span class="form-text">Max characters: 50</span>
+        <input type="text" name="manga_name" class="form-control" required value="{{ manga.name }}" disabled>
+        <span class="form-text">Can't edit the manga name, create a new entry if needed</span>
     </div>
     <div class="mb-3">
         <label for="genres" class="form-label">Genres - optional</label>
         <select class="form-select" size="5" multiple name="genres">
             {% for genre in genres %}
-            <option value="{{ genre }}">{{ genre }}</option>
+            <option value="{{ genre }}"{% if genre in manga.genres.all %}selected{% endif %}>{{ genre }}</option>
             {% endfor %}
           </select>
           <span class="form-text">CTRL+ left click to choose multiple genres</span>
@@ -31,20 +31,20 @@
     <div class="mb-3">
         <label for="status" class="form-label">Manga status</label>
         <select class="form-select" name="status" required>
-            <option value="" disabled selected>Select a status for your manga</option>
-            <option value="F">Finished</option>
-            <option value="R">Releasing</option>
-            <option value="N">Not released</option>
+            <option value="" disabled>Select a status for your manga</option>
+            <option value="F" {% if manga.status == 'F' %}selected{% endif %}>Finished</option>
+            <option value="R" {% if manga.status == 'R' %}selected{% endif %}>Releasing</option>
+            <option value="N" {% if manga.status == 'N' %}selected{% endif %}>Not released</option>
         </select>
     </div>
     <div class="mb-3">
         <label for="releasedate" class="form-label">Release date - optional</label>
-        <input type="date" class="form-control" name="releasedate">
+        <input type="date" class="form-control" name="releasedate" value="{{ manga.releasedate|date:'Y-m-d' }}">
         <span class="form-text">If not released yet, can be an expected release date</span>
     </div>
     <div>
         <label for="enddate" class="form-label">End date - optional</label>
-        <input type="date" class="form-control" name="enddate">
+        <input type="date" class="form-control" name="enddate" value="{{ manga.enddate|date:'Y-m-d'}}">
         <span class="form-text">If still releasing, can be the expected end date</span>
     </div>
     <div class="mb-3">
@@ -52,7 +52,16 @@
         <input class="form-control" type="file" name="thumb" accept="image/*" id="image_input">
         <span class="form-text">Max image size: 5MB</span>
     </div>
-    <div id="image_preview" class="container text-center"></div>
+    <div id="image_preview" class="container text-center">
+        <div class="row">
+            <div class="col-3">
+                <figure class="figure">
+                    <img src="{{ manga.thumb.url }}" alt="{{ manga.name}} thumbnail" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">{{ manga.name }} thumb</figcaption>
+                </figure>
+            </div>
+        </div>
+    </div>
     <input class="btn btn-primary" type="submit" value="Submit manga entry">
 </form>
 {% endblock %}

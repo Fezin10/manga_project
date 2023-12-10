@@ -12,18 +12,22 @@
     <form action="{% url 'edituser' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">
-            <input class="form-control" autofocus type="text" name="username" value="{{ user.username }}">
+            <label for="username" class="form-label">Name</label>
+            <input class="form-control" autofocus type="text" name="username" id="username" value="{{ user.username }}">
         </div>
         <div class="mb-3">
-            <label for="old_password" class="form-label">If you want to change the password, input your old password bellow.</label>
+            <label for="old_password" class="form-label">Current password</label>
             <input class="form-control" type="password" name="old_password" placeholder="Current Password" id="old_password">
+            <span class="form-text">If you want to change the password, input your current password above.</span>
         </div>
         <div class="mb-3">
-            <input class="form-control" type="password" name="password" placeholder="New Password" aria-describedby="passwordHelpInline">
-            <span id="passwordHelpInline" class="form-text">Must be at least 4 characters long.</span>
+            <label for="password" class="form-label">Password</label>
+            <input class="form-control" type="password" name="password" id="password" placeholder="New Password">
+            <span class="form-text">Must be at least 4 characters long.</span>
         </div>
         <div class="mb-3">
-            <input class="form-control" type="password" name="confirmation" placeholder="Confirm New Password">
+            <label for="confirmation" class="form-label">Confirm password</label>
+            <input class="form-control" type="password" name="confirmation" id="confirmation" placeholder="Confirm New Password">
         </div>
         <div class="mb-3">
             <label for="image_input" class="form-label">Icon</label>

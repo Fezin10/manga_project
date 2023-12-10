@@ -9,12 +9,12 @@
     {% csrf_token %}
     <div class="mb-3">
         <label for="chapter" class="form-label">Which chapter are you adding?</label>
-        <input type="number" min="1" step="1" name="chapter" class="form-control" required placeholder="1">
+        <input type="number" min="1" step="1" name="chapter" class="form-control" required placeholder="1" id="chapter">
         <span class="form-text">The number must be integer</span>
     </div>
     <div class="mb-3">
-        <label for="status" class="form-label">Select the manga:</label>
-        <select class="form-select" name="manga" required>
+        <label for="manga" class="form-label">Select the manga:</label>
+        <select class="form-select" name="manga" id="manga" required>
             {% for manga in mangas %}
                 <option value="{{ manga.id }}">{{ manga.name }}{% if manga.latest_chapter %} - last chapter: {{ manga.latest_chapter }} {% else %} - No chapters released{% endif %}</option>
             {% empty %}
@@ -24,7 +24,7 @@
     </div>
     <input class="btn btn-primary" type="submit" value="Submit chapter to the manga">
     <div class="mb-3">
-        <label for="formFile" class="form-label">Select the pages</label>
+        <label for="image_input" class="form-label">Select the pages:</label>
         <input class="form-control" type="file" name="pages" accept="image/*" multiple id="image_input" required>
         <span class="form-text">Select the pages in order! Max image size: 5MB</span>
     </div>

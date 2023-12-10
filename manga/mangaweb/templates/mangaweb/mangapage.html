@@ -8,7 +8,7 @@
         <div id="page_image"><img src="{% if manga.thumb %}{{ manga.thumb.url }}{% else %}{% static 'mangaweb/images/image_placeholder.webp' %}{% endif %}"
              alt="{{ manga.name }} Thumbnail" class="img-thumbnail mangapage_image"></div>
         <div id="page_content">
-            <div>Author: <a href="{% url 'userpage' manga.author.id %}">{{ manga.author }}</a></div>
+            <div><a href="{% url 'userpage' manga.author.id %}" class="simple_a">Author: {{ manga.author }}</a></div>
             <div>Genres:
                 <ul>
                     {% for genre in manga.genres.all %}

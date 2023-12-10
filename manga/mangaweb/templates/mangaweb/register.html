@@ -12,20 +12,24 @@
     <form action="{% url 'register' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">
-            <input class="form-control" autofocus type="text" name="username" placeholder="Username">
+            <label for="username" class="form-label">Username</label>
+            <input class="form-control" autofocus type="text" name="username" id="username" placeholder="Username">
         </div>
         <div class="mb-3">
-            <input class="form-control" type="email" name="email" placeholder="Email Address">
+            <label for="email" class="form-label">Email</label>
+            <input class="form-control" type="email" name="email" id="email" placeholder="Email Address">
         </div>
         <div class="mb-3">
-            <input class="form-control" type="password" name="password" placeholder="Password" aria-describedby="passwordHelpInline">
-            <span id="passwordHelpInline" class="form-text">Must be at least 4 characters long.</span>
+            <label for="password" class="form-label">Password</label>
+            <input class="form-control" type="password" name="password" placeholder="Password" id="password">
+            <span class="form-text">Must be at least 4 characters long.</span>
         </div>
         <div class="mb-3">
-            <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
+            <label for="confirmation" class="form-label">Confirmation Password</label>
+            <input class="form-control" type="password" name="confirmation" id="confirmation" placeholder="Confirm Password">
         </div>
         <div class="mb-3">
-            <label for="icon" class="form-label">Icon</label>
+            <label for="image_input" class="form-label">Icon</label>
             <input class="form-control" type="file" name="icon" accept="image/*" id="image_input">
             <span id="iconhelpinline" class="form-text">Optional - Choose an icon, size limit is 2 MB.</span>
         </div>

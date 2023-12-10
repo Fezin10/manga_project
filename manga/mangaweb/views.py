@@ -8,6 +8,7 @@ from django.core.files.storage import default_storage
 from django.db import IntegrityError
 from django.db.models import Count, OuterRef, Subquery
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
+from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
 from django.shortcuts import render
 from django.urls import reverse
@@ -265,8 +266,11 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
 
         if user:
-            login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            try:
+                helper.login_user(request, user)
+                return HttpResponseRedirect(reverse("index"))
+            except Ratelimited:
+                return render(request, "mangaweb/login.html", {'message': 'Too many login requests, wait some time before trying to login again'})
         else:
             return render(request, "mangaweb/login.html", {"message": "Invalid username and/or password."})
 

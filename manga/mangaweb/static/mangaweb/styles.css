@@ -37,6 +37,11 @@
     object-fit: scale-down;
 }
 
+.simple_a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
 .sinopse {
     max-width: 40em;
     word-wrap: break-word;

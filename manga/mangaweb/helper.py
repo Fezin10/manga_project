@@ -1,4 +1,5 @@
 import os
+from django.contrib.auth import login
 from django.contrib.auth.hashers import check_password
 from django_ratelimit.decorators import ratelimit
 from .models import *
@@ -23,6 +24,11 @@ def image_size_validation(image, size):
         if image.size > size*1024*1024:
             return False
     return True
+
+
+@ratelimit(key='user', rate='1/m', block=True)
+def login_user(request, user):
+    login(request, user)
 
 
 # generate the path to store the thumb image of some manga

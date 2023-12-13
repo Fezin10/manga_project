@@ -107,6 +107,16 @@ def addmanga(request):
 
 
 @login_required
+def authorregister(request):
+    if not request.user.author:
+        request.user.author = True
+        request.user.save()
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'Invalid status'})
+
+
+@login_required
 def edit(request, manga_id):
     # validation
     if not request.user.author:

@@ -154,6 +154,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
 
+        let author_button = document.querySelector('#author_button');
+        if (author_button) {
+            author_button.addEventListener('click', () => {
+                fetch(author_button.value)
+                .then(response => response.json())
+                .then(data => {
+                    if (data['status'] == 'success') {
+                        document.querySelector('#user_author_div').innerHTML = 'Author: True'
+                    }
+                })
+            })
+        }
+
+
         if (!isMobileDevice()) {
             try {
                 document.getElementById('page_image').className = 'col';

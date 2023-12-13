@@ -11,7 +11,7 @@
             <div>Account created at: {{ pageuser.date_joined|date:"Y-m-d" }}</div>
             <div>Premium: {{ pageuser.premium }}</div>
             <div>Staff: {{ pageuser.moderator }}</div>
-            <div>Author: {{ pageuser.author }}</div>
+            <div id="user_author_div">Author: {{ pageuser.author }} {% if not pageuser.author and user == pageuser %}<button class="btn btn-primary" id="author_button" value="{% url 'authorregister' %}">Be an author</button>{% endif %}</div>
             {% if pageuser.author %}
             <div>Works: {{ pageuser.works.count }}</div>
             {% endif %}

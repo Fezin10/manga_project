@@ -8,61 +8,63 @@
 {% endif %}
 <br>
 <h4>Filters</h4>
-<div>Active filters: {{ filters }}</div>
 <div>
     <form action="{% url 'mangas' %}">
+        {% if filters.query %}
+        <input name="query" value="{{ filters.query }}" hidden>
+        {% endif %}
         <div class="dropdown filter_dropdown">
-            <button class="btn btn-primary dropdown-toogle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Filters</button>
+            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Filters</button>
             <ul class="dropdown-menu">
                 <li>Status</li>
                 <li>
-                    <input class="form-check-input" type="checkbox" id="finished" name="status" value="F">
+                    <input class="form-check-input" type="checkbox" id="finished" name="status" value="F" {% if 'F' in filters.status %}checked{% endif %}>
                     <label class="form-check-label" for="finished">Finished</label>
                 </li>
                 <li>
-                    <input class="form-check-input" type="checkbox" id="releasing" name="status" value="R">
+                    <input class="form-check-input" type="checkbox" id="releasing" name="status" value="R" {% if 'R' in filters.status %}checked{% endif %}>
                     <label class="form-check-label" for="releasing">Releasing</label>
                 </li>
                 <li>
-                    <input class="form-check-input" type="checkbox" id="notreleased" name="status" value="N">
+                    <input class="form-check-input" type="checkbox" id="notreleased" name="status" value="N" {% if 'N' in filters.status %}checked{% endif %}>
                     <label class="form-check-label" for="notreleased">Not Released</label>
                 </li>
                 {% if user.is_authenticated %}
                     <li><hr class="dropdown-divider">Liked</li>
                     <li>
-                        <input class="form-check-input" type="checkbox" id="liked" name="liked">
+                        <input class="form-check-input" type="checkbox" id="liked" name="liked" {% if filters.liked %}checked{% endif %}>
                         <label class="form-check-label" for="liked">Liked mangas</label>
                     </li>
                     <li>
-                        <input class="form-check-input" type="checkbox" id="authors" name="authors">
+                        <input class="form-check-input" type="checkbox" id="authors" name="authors" {% if filters.liked %}checked{% endif %}>
                         <label class="form-check-label" for="authors">Liked authors</label>
                     </li>
                 {% endif %}
                 <li><hr class="dropdown-divider">Sort</li>
                 <li>
-                    <input class="form-check-input" type="radio" name="sort" id="az" value="az">
+                    <input class="form-check-input" type="radio" name="sort" id="az" value="az" {% if filters.sort == 'az' %}checked{% endif %}>
                     <label class="form-check-label" for="az">A-Z</label>
                 </li>
                 <li>
-                    <input class="form-check-input" type="radio" name="sort" id="za" value="za">
+                    <input class="form-check-input" type="radio" name="sort" id="za" value="za" {% if filters.sort == 'za' %}checked{% endif %}>
                     <label class="form-check-label" for="za">Z-A</label>
                 </li>
                 <li>
-                    <input class="form-check-input" type="radio" name="sort" id="popularity" value="pop">
+                    <input class="form-check-input" type="radio" name="sort" id="popularity" value="pop" {% if filters.sort == 'pop'%}checked{% endif %}>
                     <label class="form-check-label" for="popularity">Most Popular</label>
                 </li>
                 <li>
-                    <input class="form-check-input" type="radio" name="sort" id="impopularity" value="imp">
+                    <input class="form-check-input" type="radio" name="sort" id="impopularity" value="imp" {% if filters.sort == 'imp' %}checked{% endif %}>
                     <label class="form-check-label" for="impopularity">Less Popular</label>
                 </li>
             </ul>
         </div>
         <div class="dropdown filter_dropdown">
-            <button class="btn btn-primary dropdown-toogle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Genre</button>
+            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Genre</button>
             <ul class="dropdown-menu">
                 {% for genre in genres %}
                     <li>
-                        <input class="form-check-input" type="checkbox" name="genres" id="genre-{{ genre }}" value="{{ genre }}">
+                        <input class="form-check-input" type="checkbox" name="genres" id="genre-{{ genre }}" value="{{ genre }}" {% if genre.genre in filters.genres %}checked{% endif %}>
                         <label class="form-check-label" for="genre-{{ genre }}">{{ genre }}</label>
                     </li>
                 {% endfor %}
@@ -77,10 +79,12 @@
         {% for manga in mangas %}
             <div class="col">
                 <figure class="figure">
-                    <a href="{% url 'mangapage' manga.name manga.id %}"><img src="{% if manga.thumb %}{{ manga.thumb.url }}{% else %}{% static 'mangaweb/images/image_placeholder.webp' %}{% endif %}" class="figure-img img-thumbnail index_image" alt="{{ manga.name }} thumbnail"></a>
+                    <a href="{% url 'mangapage' manga.id %}"><img src="{% if manga.thumb %}{{ manga.thumb.url }}{% else %}{% static 'mangaweb/images/image_placeholder.webp' %}{% endif %}" class="figure-img img-thumbnail index_image" alt="{{ manga.name }} thumbnail"></a>
                     <figcaption class="figure-caption text-center">{{ manga.name }}</figcaption>
                 </figure>
             </div>
+        {% empty %}
+            <div class="col">No mangas found for the used filters</div>
         {% endfor %}
     </div>
 </div>

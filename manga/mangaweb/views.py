@@ -233,7 +233,6 @@ def follow(request, user_id):
 def index(request):
     # Get the most popular mangas that are finished or releasing
     mangas = Manga.objects.filter(status__in=['F', 'R']).annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
-    print(mangas)
     return render(request, 'mangaweb/index.html', {'mangas': mangas, 'genres': Genre.objects.all().order_by('genre')})
 
 
@@ -281,7 +280,7 @@ def logout_view(request):
     return HttpResponseRedirect(reverse('index'))
 
 
-def mangapage(request, manganame, mangaid):
+def mangapage(request, mangaid):
     if request.method != "GET":
         return HttpResponseRedirect(reverse("index"))
     else:
@@ -306,38 +305,53 @@ def mangas(request):
         return render(request, 'mangaweb/index.html', {'mangas': mangas, 'genres': dropdown_genres, 'message': message})
 
     # Base variables
-    mangas = Manga.objects.all()
+    filters = dict()
+    query = request.GET.get('query')
+    if query:
+        mangas = Manga.objects.filter(name__icontains=query)
+        filters['query'] = query
+    else:
+        mangas = Manga.objects.all()
     dropdown_genres = Genre.objects.all().order_by('genre')
+
 
     # change the mangas query depending on the filters requested by the user
     if request.user.is_authenticated:
         if request.GET.get('liked'):
             mangas = mangas.filter(likes=request.user)
+            filters['liked'] = True
         if request.GET.get('authors'):
             mangas = mangas.filter(author__in=request.user.following.all())
+            filters['authors'] = True
 
     status = request.GET.getlist('status')
     if status:
         mangas = mangas.filter(status__in=status)
+        filters['status'] = status
 
     genres = request.GET.getlist('genres')
     if genres:
         mangas = mangas.filter(genres__in=dropdown_genres.filter(genre__in=genres))
-
+        filters['genres'] = genres
     sort = request.GET.get('sort')
     if sort:
         if sort == 'az':
             mangas = mangas.order_by('name')
+            filters['sort'] = 'az'
         elif sort == 'za':
             mangas = mangas.order_by('-name')
+            filters['sort'] = 'za'
         elif sort == 'imp':
             mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('num_likes', 'num_views', 'name')
+            filters['sort'] = 'imp'
         elif sort == 'pop':
             mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
+            filters['sort'] = 'pop'
     else:
         mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
 
-    return render(request, 'mangaweb/index.html', {'mangas': mangas, 'genres': dropdown_genres})
+
+    return render(request, 'mangaweb/index.html', {'mangas': mangas, 'genres': dropdown_genres, 'filters': filters})
 
 
 def register_view(request):
@@ -379,7 +393,7 @@ def register_view(request):
         
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
-    
+
 
 def userpage(request, user_id):
     if request.method == 'GET':

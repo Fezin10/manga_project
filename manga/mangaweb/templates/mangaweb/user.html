@@ -34,7 +34,7 @@
             {% for manga in mangas %}
                 <div class="col">
                     <figure class="figure">
-                        <a href="{% url 'mangapage' manga.name manga.id %}">
+                        <a href="{% url 'mangapage' manga.id %}">
                             <img
                             {% if manga.thumb %}
                             src="{{ manga.thumb.url }}"

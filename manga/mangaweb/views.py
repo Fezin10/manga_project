@@ -57,7 +57,7 @@ def addchapter(request):
                 Page(chapter=chapter, page_number=i, page_content=image).save()
         else:
             return error('No images provided')
-        return HttpResponseRedirect(reverse('mangapage', args=[manga.name, manga.id]))
+        return HttpResponseRedirect(reverse('mangapage', args=[manga.id]))
 
 
 @login_required
@@ -305,9 +305,18 @@ def mangapage(request, mangaid):
         return render(request, "mangaweb/mangapage.html", {"manga": manga, "views": views, "chapters": chapters})
 
 
-def mangaread(request, manga_id, chapter):
-    #TODO
-    return HttpResponse(f'manga id: {manga_id}, chapter: {chapter}')
+def mangaread(request, manga_id, chapter_number):
+    try:
+        manga = Manga.objects.get(id=manga_id)
+        chapter = manga.chapters.get(chapter_number=chapter_number)
+    except:
+        raise Http404("Manga not found or chapter not found")
+    
+    data = dict()
+    data['next'] = manga.chapters.filter(chapter_number=chapter_number+1).exists()
+    data['previous'] = manga.chapters.filter(chapter_number=chapter_number-1).exists()
+    print(request.user_agent.is_mobile)
+    return render(request, 'mangaweb/mangaread.html' if not request.user_agent.is_mobile else 'mangaweb/mangaread_mobile.html', {'chapter': chapter, 'data': data})
 
 
 def mangas(request):
@@ -416,3 +425,13 @@ def userpage(request, user_id):
         else:
             mangas = None
         return render(request, 'mangaweb/user.html', {'pageuser': user, 'mangas': mangas})
+    
+
+@login_required
+def visualization(request, manga_id, chapter):
+    try:
+        chapter = Manga.objects.get(id=manga_id).chapters.get(chapter_number=chapter)
+        chapter.read.add(request.user)
+        return JsonResponse({'status': 'success'})
+    except:
+        return JsonResponse({'status': 'fail'})

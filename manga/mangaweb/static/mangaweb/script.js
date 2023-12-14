@@ -168,6 +168,100 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
 
+        let pageview = document.querySelector('#page_view');
+        if (pageview) {
+            let visualization = document.querySelector('#view').innerHTML;
+            document.querySelector('#view').remove();
+            index = 0; // keeps track of which image to show
+            pages = document.querySelectorAll('.page_read');
+
+            // all images besides the first are being hidden
+            for (let i = 1; i < pages.length; i++) {
+                pages[i].style.display = 'none';
+            }
+
+            next = document.querySelector('#next');
+            next.style.display = 'none';
+            previous = document.querySelector('#previous');
+            previous.style.display = 'none';
+            
+            // handle the clicks to change the image
+            document.querySelector('#next_button').addEventListener('click', left)
+            document.querySelector('#previous_button').addEventListener('click', right)
+           // handles when the navbar is being used 
+            document.querySelector('#navbar-toggler').addEventListener('click', () => {
+                setTimeout(changetop, 320);
+            })
+
+            document.addEventListener('keydown', handleArrowKey);
+
+            // Go to next image
+            function left() {
+                if (previous.style.display == 'inline') {
+                    pages[index].style.display = 'inline';
+                    previous.style.display = 'none';
+                } else {
+                    pages[index].style.display = 'none';
+                    if (index+1 >= pages.length) {
+                        next.style.display = 'inline';
+                        fetch(visualization)
+                        changetop()
+                    } else {
+                        index++;
+                        pages[index].style.display = 'inline';
+                    }
+                }
+            }
+
+            // Go to previous image
+            function right() {
+                if (next.style.display == 'inline') {
+                    next.style.display = 'none';
+                    pages[index].style.display = 'inline';
+                } else {
+                    pages[index].style.display = 'none';
+                    if (index-1 < 0) {
+                        previous.style.display = 'inline';
+                        changetop()
+                    } else {
+                        index--;
+                        pages[index].style.display = 'inline';
+                    }
+                }
+            }
+
+            // update the size of the buttons to change the page so they dont get in the way of other things
+            function changetop() {
+                let n = document.querySelector('#next_button');
+                let p = document.querySelector('#previous_button');
+                let value;
+                if (previous.style.display !== 'none') {
+                    // get where the especial text happens, and get bellow it by 2 em to let the user click the content inside the text if needed
+                    value = previous.offsetTop + (parseFloat(window.getComputedStyle(previous).fontSize)*2) + 'px';
+                } else if (next.style.display !== 'none') {
+                    value = next.offsetTop + (parseFloat(window.getComputedStyle(next).fontSize)*2) + 'px';
+                } else {
+                    value = pages[index].offsetTop + 'px';
+                }
+
+                n.style.top = value;
+                p.style.top = value;
+                
+            }
+
+            // go to next or previous page if the user presses right or left key
+            function handleArrowKey(event) {
+                if (event.key == 'ArrowLeft') {
+                    left();
+                } else if (event.key == 'ArrowRight') {
+                    right();
+                }
+            }
+
+            changetop()
+        }
+
+
         if (!isMobileDevice()) {
             try {
                 document.getElementById('page_image').className = 'col';

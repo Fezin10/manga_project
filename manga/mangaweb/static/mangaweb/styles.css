@@ -9,6 +9,10 @@
     margin-bottom: 4rem;
 }
 
+.chapter_button {
+    font-size: xx-large;
+}
+
 .filter_dropdown {
     display: inline-block;
 }
@@ -31,6 +35,26 @@
     color: red;
 }
 
+.page_read {
+    max-width: 100%;
+    height: 90vh;
+    object-fit: scale-down;
+}
+
+.page_overlay {
+    position: absolute;
+    bottom: 0;
+    width: 50%;
+}
+
+.page_left_overlay {
+    left: 0;
+}
+
+.page_right_overlay {
+    right: 0;
+}
+
 .pageuser_icon {
     width: 20rem;
     height: 20rem;
@@ -51,7 +75,10 @@
     margin-bottom: 2rem;
 }
 
-
+#page_view {
+    height: 90vh;
+    vertical-align: center;
+}
 
 .dark_primary {
     color: darkblue;

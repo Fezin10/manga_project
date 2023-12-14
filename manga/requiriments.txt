@@ -1,3 +1,4 @@
 os
 shutil
 django_ratelimit
+django-user-agents

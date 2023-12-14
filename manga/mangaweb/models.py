@@ -28,6 +28,9 @@ class Chapter(models.Model):
     read = models.ManyToManyField(User, blank=True)
     chapter_number = models.PositiveSmallIntegerField()
 
+    def __str__(self):
+        return f'Chapter {self.chapter_number} Manga {self.manga}'
+
 
 class Genre(models.Model):
     id  = models.AutoField(primary_key=True)
@@ -63,6 +66,9 @@ class Page(models.Model):
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='pages')
     page_number = models.PositiveSmallIntegerField()
     page_content = models.ImageField(upload_to=helper.manga_page)
+
+    def __str__(self):
+        return f'Page {self.page_number} chapter {self.chapter.chapter_number} manga {self.chapter.manga}'
 
 
 class Comment(models.Model):

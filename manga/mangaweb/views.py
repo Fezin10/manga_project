@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.db.models import Count, OuterRef, Subquery
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
@@ -241,9 +242,7 @@ def follow(request, user_id):
 
 
 def index(request):
-    # Get the most popular mangas that are finished or releasing
-    mangas = Manga.objects.filter(status__in=['F', 'R']).annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
-    return render(request, 'mangaweb/index.html', {'mangas': mangas, 'genres': Genre.objects.all().order_by('genre')})
+    return HttpResponseRedirect(reverse('mangas'))
 
 
 @login_required
@@ -302,7 +301,10 @@ def mangapage(request, mangaid):
         for chapter in manga.chapters.all():
             views += chapter.read.count()
         chapters = manga.chapters.all().order_by('chapter_number')
-        return render(request, "mangaweb/mangapage.html", {"manga": manga, "views": views, "chapters": chapters})
+        chapters = Paginator(chapters, 50 if request.user_agent.is_mobile else 100)
+        page = int(request.GET.get('page')) if request.GET.get('page') else 1
+        data = {'page': page, 'num_pages': chapters.num_pages, 'before': page-1 > 0, 'after': page+1 <= chapters.num_pages}
+        return render(request, "mangaweb/mangapage.html", {"manga": manga, "views": views, "chapters": chapters.page(page), 'data': data})
 
 
 def mangaread(request, manga_id, chapter_number):
@@ -369,8 +371,19 @@ def mangas(request):
     else:
         mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
 
+    mangas = Paginator(mangas, 10 if request.user_agent.is_mobile else 20)
+    page = int(request.GET.get('page')) if request.GET.get('page') else 1
+    data = {'page': page, 'num_pages': mangas.num_pages, 'before': page-1 > 0, 'after': page+1 <= mangas.num_pages, 'filters': ''}
+    for k in filters.keys():
+        if type(filters[k]) == list:
+            for v in filters[k]:
+                data['filters'] += f'{k}={v}&'
+        else:
+            data['filters'] += f'{k}={filters[k]}&'
+    data['filters'] = data['filters'].rstrip('&')
 
-    return render(request, 'mangaweb/index.html', {'mangas': mangas, 'genres': dropdown_genres, 'filters': filters})
+
+    return render(request, 'mangaweb/index.html', {'mangas': mangas.page(page), 'genres': dropdown_genres, 'filters': filters, 'data': data})
 
 
 def register_view(request):

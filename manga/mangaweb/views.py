@@ -72,7 +72,11 @@ def addmanga(request):
         def error(message):
             return render(request, 'mangaweb/addmanga.html', {'genres': genre_entries, 'message': message})
 
-        manga = Manga(name=request.POST["manga_name"].strip(), author=request.user, status=request.POST["status"], sinopse=request.POST["sinopse"])
+        manga = Manga(name=request.POST["manga_name"].strip(), author=request.user, sinopse=request.POST["sinopse"])
+        status = request.POST["status"]
+        if status == 'C':
+            return error('Invalid status')
+        manga.status = status
         releasedate = request.POST["releasedate"]
         if releasedate: manga.releasedate = releasedate
         enddate = request.POST["enddate"]
@@ -117,6 +121,17 @@ def authorregister(request):
         return JsonResponse({'status': 'Invalid status'})
 
 
+@helper.moderator_required
+def check(request, manga_id):
+    try:
+        manga = Manga.objects.get(id=manga_id)
+        manga.status = 'C'
+        manga.save()
+        return JsonResponse({'status': 'success'})
+    except:
+        return JsonResponse({'status': 'fail'})
+
+
 @login_required
 def edit(request, manga_id):
     # validation
@@ -139,6 +154,8 @@ def edit(request, manga_id):
 
         # Setting the new fields
         manga.status = request.POST['status']
+        if manga.status == 'C':
+            return error('Invalid status')
         manga.sinopse = request.POST['sinopse']
         if request.POST["releasedate"]: manga.releasedate = request.POST["releasedate"]
         if request.POST["enddate"]: manga.enddate = request.POST["enddate"]
@@ -240,9 +257,8 @@ def follow(request, user_id):
         return JsonResponse({'status': 'success', 'following': following, 'following_count': user.followed_by.count()})
 
 
-
 def index(request):
-    return HttpResponseRedirect(reverse('mangas'))
+    return HttpResponseRedirect('mangas?page=1')
 
 
 @login_required
@@ -297,6 +313,8 @@ def mangapage(request, mangaid):
             manga = Manga.objects.get(id=mangaid)
         except:
             raise Http404("Manga not found")
+        if manga.status == 'C' and not request.user.author:
+            raise Http404("Manga not found")
         views = 0
         for chapter in manga.chapters.all():
             views += chapter.read.count()
@@ -329,10 +347,10 @@ def mangas(request):
     filters = dict()
     query = request.GET.get('query')
     if query:
-        mangas = Manga.objects.filter(name__icontains=query)
+        mangas = Manga.objects.filter(name__icontains=query).exclude(status='C')
         filters['query'] = query
     else:
-        mangas = Manga.objects.all()
+        mangas = Manga.objects.exclude(status='C')
     dropdown_genres = Genre.objects.all().order_by('genre')
 
 

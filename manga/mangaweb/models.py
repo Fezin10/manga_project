@@ -44,7 +44,8 @@ class Manga(models.Model):
     STATUS_CHOICES = [
         ('F', 'Finished'),
         ('R', 'Releasing'),
-        ('N', 'Not released')
+        ('N', 'Not released'),
+        ('C', 'Check')
     ]
 
     id = models.AutoField(primary_key=True)
@@ -69,13 +70,6 @@ class Page(models.Model):
 
     def __str__(self):
         return f'Page {self.page_number} chapter {self.chapter.chapter_number} manga {self.chapter.manga}'
-
-
-class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    manga = models.ForeignKey(Manga, on_delete=models.CASCADE)
-    message = models.TextField(max_length=256)
-    comment_likes = models.ManyToManyField(User, related_name='like_on_comment')
 
 
 # Deletion handlers

@@ -20,7 +20,9 @@ urlpatterns = [
     path("edituser",views.edituser, name="edituser"),
     path("authorregister", views.authorregister, name='authorregister'),
     path("mangapage/<int:manga_id>/<int:chapter_number>", views.mangaread, name="mangaread"),
-    path("chapter_visualization/<int:manga_id>/<int:chapter>", views.visualization, name="visualization")
+    path("chapter_visualization/<int:manga_id>/<int:chapter>", views.visualization, name="visualization"),
+    path("moderator/check/<int:manga_id>", views.check, name="check"),
+    
 ]
 
 if settings.DEBUG:

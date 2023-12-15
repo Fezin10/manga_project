@@ -58,6 +58,24 @@ document.addEventListener('DOMContentLoaded', () => {
         image_input.addEventListener('change', preview_image);
         }
 
+        let analysis = document.querySelector('#analysis_button');
+        if (analysis) {
+            analysis.addEventListener('click', () => {
+                let check = window.prompt("What is the problem with the manga?");
+                if (check !== null) {
+                    fetch(analysis.getAttribute('data-url'))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data['status'] === 'success') {
+                            analysis.parentElement.innerHTML = 'To check';
+                        } else {
+                            alert('Fail');
+                        }
+                    })
+                }
+            })
+        }
+
 
         // Like button to the mangapage
         let like_button = document.querySelector("#like_button");

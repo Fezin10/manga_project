@@ -1,6 +1,7 @@
 import os
 from django.contrib.auth import login
 from django.contrib.auth.hashers import check_password
+from django.http import Http404
 from django_ratelimit.decorators import ratelimit
 from .models import *
 
@@ -49,6 +50,15 @@ def manga_page(instance, filename):
     file_extension = os.path.splitext(filename)[1].lower()
 
     return f"manga/{manga_name}/{manga_id}/{chapter_number}/{page_number}{file_extension}"
+
+
+def moderator_required(view):
+    def wrapper(request, *args, **kwargs):
+        if request.user.is_authenticated and request.user.moderator:
+            return view(request, *args, **kwargs)
+        else:
+            raise Http404()
+    return wrapper
 
 
 def user(instance, filename):

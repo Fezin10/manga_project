@@ -3,4 +3,4 @@
 db.sqlite3
 media
 TODO.txt
-mangaweb/migrations
+**/migrations*

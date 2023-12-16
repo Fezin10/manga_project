@@ -74,7 +74,7 @@ def addmanga(request):
 
         manga = Manga(name=request.POST["manga_name"].strip(), author=request.user, sinopse=request.POST["sinopse"])
         status = request.POST["status"]
-        if status == 'C':
+        if status == 'A':
             return error('Invalid status')
         manga.status = status
         releasedate = request.POST["releasedate"]
@@ -122,11 +122,11 @@ def authorregister(request):
 
 
 @helper.moderator_required
-def check(request, manga_id):
+def block_user(request, user_id):
     try:
-        manga = Manga.objects.get(id=manga_id)
-        manga.status = 'C'
-        manga.save()
+        user = User.objects.get(id=user_id)
+        Banned(email=user.email).save()
+        user.delete()
         return JsonResponse({'status': 'success'})
     except:
         return JsonResponse({'status': 'fail'})
@@ -154,7 +154,7 @@ def edit(request, manga_id):
 
         # Setting the new fields
         manga.status = request.POST['status']
-        if manga.status == 'C':
+        if manga.status == 'A':
             return error('Invalid status')
         manga.sinopse = request.POST['sinopse']
         if request.POST["releasedate"]: manga.releasedate = request.POST["releasedate"]
@@ -257,6 +257,22 @@ def follow(request, user_id):
         return JsonResponse({'status': 'success', 'following': following, 'following_count': user.followed_by.count()})
 
 
+@helper.moderator_required
+def free_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        user.retain_reason = None
+        user.retained = False
+        fault = request.GET.get('fault')
+        if fault and fault == 'True':
+            user.faults += 1
+        user.save()
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        print(e)
+        return JsonResponse({'status': 'fail'})
+
+
 def index(request):
     return HttpResponseRedirect('mangas?page=1')
 
@@ -313,7 +329,7 @@ def mangapage(request, mangaid):
             manga = Manga.objects.get(id=mangaid)
         except:
             raise Http404("Manga not found")
-        if manga.status == 'C' and not request.user.author:
+        if manga.status == 'A' and request.user != manga.author and request.user.moderator == False:
             raise Http404("Manga not found")
         views = 0
         for chapter in manga.chapters.all():
@@ -445,12 +461,38 @@ def register_view(request):
         return HttpResponseRedirect(reverse("index"))
 
 
+@helper.moderator_required
+def retain_manga(request, manga_id):
+    try:
+        manga = Manga.objects.get(id=manga_id)
+        manga.status = 'A'
+        manga.save()
+        return JsonResponse({'status': 'success'})
+    except:
+        return JsonResponse({'status': 'fail'})
+    
+
+@helper.moderator_required
+def retain_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        user.retained = True
+        user.retain_reason = request.GET.get('reason')
+        user.save()
+        return JsonResponse({'status': 'success'})
+    except:
+        return JsonResponse({'status': 'fail'})
+
+
 def userpage(request, user_id):
     if request.method == 'GET':
         try:
             user = User.objects.get(id=user_id)
         except:
             raise Http404('User not found')
+        print(user.retained)
+        if user.retained and request.user != user and not request.user.moderator:
+            raise Http404("User not found")
         if user.author:
             mangas = Manga.objects.filter(author=user)
         else:

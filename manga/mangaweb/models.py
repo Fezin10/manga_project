@@ -13,6 +13,9 @@ from . import helper
 class User(AbstractUser):
     moderator = models.BooleanField(default=False)
     author = models.BooleanField(default=False)
+    retained = models.BooleanField(default=False)
+    retain_reason = models.TextField(blank=True, null=True)
+    faults = models.PositiveSmallIntegerField(default=0)
     premium = models.BooleanField(default=False)
     icon = models.ImageField(upload_to=helper.user, null=True, blank=True)
     following = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='followed_by')
@@ -45,7 +48,7 @@ class Manga(models.Model):
         ('F', 'Finished'),
         ('R', 'Releasing'),
         ('N', 'Not released'),
-        ('C', 'Check')
+        ('A', 'Retained for analysis')
     ]
 
     id = models.AutoField(primary_key=True)

@@ -21,8 +21,11 @@ urlpatterns = [
     path("authorregister", views.authorregister, name='authorregister'),
     path("mangapage/<int:manga_id>/<int:chapter_number>", views.mangaread, name="mangaread"),
     path("chapter_visualization/<int:manga_id>/<int:chapter>", views.visualization, name="visualization"),
-    path("moderator/check/<int:manga_id>", views.check, name="check"),
-    
+    path("moderator/retain_manga/<int:manga_id>", views.retain_manga, name="retain_manga"),
+    path("moderator/retain_user/<int:user_id>", views.retain_user, name="retain_user"),
+    path("moderator/free_user/<int:user_id>", views.free_user, name="free_user"),
+    path("moderator/block_user/<int:user_id>", views.block_user, name="block_user"),
+
 ]
 
 if settings.DEBUG:

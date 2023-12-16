@@ -61,6 +61,15 @@
     object-fit: scale-down;
 }
 
+.retain_reason_text {
+    max-width: 40vw;
+    word-wrap: break-word;
+}
+
+.retained_text {
+    color: red;
+}
+
 .simple_a {
     text-decoration: none;
     font-weight: bold;

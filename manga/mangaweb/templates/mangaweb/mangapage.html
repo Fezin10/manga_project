@@ -3,6 +3,9 @@
 {% block title %}- {{ manga.name }}{% endblock %}
 {% block body %}
 <h2>{{ manga.name }}</h2>
+{% if manga.status == 'A' %}
+<h3 class="retained_text">Retained</h3>
+{% endif %}
 <div class="container">
     <div class="row">
         <div id="page_image"><img src="{% if manga.thumb %}{{ manga.thumb.url }}{% else %}{% static 'mangaweb/images/image_placeholder.webp' %}{% endif %}"
@@ -43,7 +46,7 @@
             {% if user.is_authenticated %}
                 <div><button class="btn btn-primary" id="like_button" value="{% url 'mangalike' manga.id %}"></button></div>
                 {% if user == manga.author %}<br><div><a class="btn btn-primary" href="{% url 'editmanga' manga.id %}">Edit</a></div>{% endif %}
-                {% if user.moderator and manga.status != 'C' %}<br><div><a class="btn btn-warning" id="analysis_button" data-url="{% url 'check' manga.id %}">To analysis</a></div>{% endif %}
+                {% if user.moderator and manga.status != 'A' %}<br><div><a class="btn btn-warning" id="analysis_button" data-url="{% url 'retain_manga' manga.id %}">Retain for analysis</a></div>{% endif %}
             {% endif %}
         </div>
     </div>

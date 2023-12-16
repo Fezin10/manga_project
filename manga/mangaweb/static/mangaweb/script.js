@@ -61,13 +61,13 @@ document.addEventListener('DOMContentLoaded', () => {
         let analysis = document.querySelector('#analysis_button');
         if (analysis) {
             analysis.addEventListener('click', () => {
-                let check = window.prompt("What is the problem with the manga?");
+                let check = window.prompt("Report the problem: ");
                 if (check !== null) {
-                    fetch(analysis.getAttribute('data-url'))
+                    fetch(`${analysis.getAttribute('data-url')}?reason=${check}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data['status'] === 'success') {
-                            analysis.parentElement.innerHTML = 'To check';
+                            location.reload();
                         } else {
                             alert('Fail');
                         }
@@ -76,6 +76,43 @@ document.addEventListener('DOMContentLoaded', () => {
             })
         }
 
+
+        let free = document.querySelector('#free_button');
+        if (free) {
+            function call(button) {
+                let url = button.getAttribute('data-url');
+                let check = document.querySelector('#fault');
+                if (check.checked) {
+                    url += '?fault=True';
+                }
+                console.log(url);
+                return fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data['status']);
+                    if (data['status'] === 'success') {
+                        return true;
+                    } else {
+                        alert('Operation failed!');
+                        return false;
+                    }
+                })
+            }
+            ban = document.querySelector('#block_button');
+            ban.addEventListener('click', () => {
+                if (call(ban)) {
+                    document.querySelector('#fault').parentElement.remove();
+                    ban.parentElement.innerHTML = 'Banned';
+                }
+            });
+            free.addEventListener('click', () => {
+                call(free).then((success) =>  {
+                    if (success) {
+                        location.reload();
+                    }
+                })
+            });
+        }
 
         // Like button to the mangapage
         let like_button = document.querySelector("#like_button");

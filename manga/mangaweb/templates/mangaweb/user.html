@@ -22,7 +22,7 @@
             <div>Following: {{ pageuser.following.count }}</div>
             {% if user.is_authenticated %}
                 {% if user != pageuser %}
-                    <div><button id="follow_button" class="btn btn-primary" value="{% url 'follow' pageuser.id %}"></button></div>
+                    <div><button id="follow_button" class="btn btn-primary" value="{% url 'follow' pageuser.id %}">{% if following %}Unfollow{% else %}Follow{% endif %}</button></div>
                     {% if user.moderator %}
                         {% if not pageuser.retained %}
                             <div><a class="btn btn-warning" id="analysis_button" data-url="{% url 'retain_user' pageuser.id %}">Retain for analysis</a></div>

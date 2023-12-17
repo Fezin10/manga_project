@@ -269,8 +269,6 @@ def follow(request, user_id):
         return JsonResponse({'status': 'Can not follow yourself'})
 
     if request.method == "GET":
-        return JsonResponse({'status': 'success', 'following': user.followed_by.filter(id=request.user.id).exists()})
-    else:
         if user.followed_by.filter(id=request.user.id).exists():
             user.followed_by.remove(request.user)
             following = False
@@ -324,17 +322,14 @@ def like(request, manga_id):
     except:
         return JsonResponse({'status': 'Manga entry not found'})
     
-    if request.method == "GET":
-        return JsonResponse({'status': 'success', 'liked': manga.likes.filter(id=request.user.id).exists()})
+    if manga.likes.filter(id=request.user.id).exists():
+        manga.likes.remove(request.user)
+        liked = False
     else:
-        if manga.likes.filter(id=request.user.id).exists():
-            manga.likes.remove(request.user)
-            liked = False
-        else:
-            manga.likes.add(request.user)
-            liked = True
+        manga.likes.add(request.user)
+        liked = True
 
-        return JsonResponse({'status': 'success', 'liked': liked, 'likes': manga.likes.count()})
+    return JsonResponse({'status': 'success', 'liked': liked, 'likes': manga.likes.count()})
 
 
 def login_view(request):
@@ -377,7 +372,7 @@ def mangapage(request, mangaid):
         chapters = manga.chapters.all().order_by('chapter_number')
         chapters = Paginator(chapters, 50 if request.user_agent.is_mobile else 100)
         page = int(request.GET.get('page')) if request.GET.get('page') else 1
-        data = {'page': page, 'num_pages': chapters.num_pages, 'before': page-1 > 0, 'after': page+1 <= chapters.num_pages}
+        data = {'page': page, 'num_pages': chapters.num_pages, 'before': page-1 > 0, 'after': page+1 <= chapters.num_pages, 'liked': manga.likes.filter(id=request.user.id).exists()}
         return render(request, "mangaweb/mangapage.html", {"manga": manga, "views": views, "chapters": chapters.page(page), 'data': data})
 
 
@@ -400,10 +395,11 @@ def mangas(request):
     filters = dict()
     query = request.GET.get('query')
     if query:
-        mangas = Manga.objects.filter(name__icontains=query).exclude(status='C')
+        mangas = Manga.objects.filter(name__icontains=query).exclude(retained=True)
         filters['query'] = query
     else:
         mangas = Manga.objects.exclude(retained=True)
+    mangas.exclude(author__retained=True)
     dropdown_genres = Genre.objects.all().order_by('genre')
 
 
@@ -543,7 +539,7 @@ def userpage(request, user_id):
             mangas = Manga.objects.filter(author=user)
         else:
             mangas = None
-        return render(request, 'mangaweb/user.html', {'pageuser': user, 'mangas': mangas})
+        return render(request, 'mangaweb/user.html', {'pageuser': user, 'mangas': mangas, 'following': user.followed_by.filter(id=request.user.id).exists()})
     
 
 @login_required

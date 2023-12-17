@@ -396,9 +396,6 @@ def mangaread(request, manga_id, chapter_number):
 
 
 def mangas(request):
-    def error(message):
-        return render(request, 'mangaweb/index.html', {'mangas': mangas, 'genres': dropdown_genres, 'message': message})
-
     # Base variables
     filters = dict()
     query = request.GET.get('query')
@@ -523,6 +520,14 @@ def retain_user(request, user_id):
         return JsonResponse({'status': 'success'})
     except:
         return JsonResponse({'status': 'fail'})
+
+
+@helper.moderator_required
+def retained(request):
+    mangas = Manga.objects.filter(retained=True)
+    users = User.objects.filter(retained=True)
+    genres = Genre.objects.all().order_by('genre')
+    return render(request, 'mangaweb/moderator.html', {'mangas': mangas, 'users': users, 'genres': genres})
 
 
 def userpage(request, user_id):

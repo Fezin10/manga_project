@@ -29,6 +29,11 @@
                     <a class="nav-link" href="{% url 'addchapter' %}">Add chapters</a>
                   </li>
                 {% endif %}
+                {% if user.moderator %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'retained' %}">Retained</a>
+                  </li>
+                {% endif %}
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                 </li>

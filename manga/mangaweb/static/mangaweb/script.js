@@ -85,10 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 let ban_author = document.querySelector('#ban_author');
                 if (check.checked) {
                     url += '?fault=True';
-                    if (ban_author.checked) {
+                    if (ban_author && ban_author.checked) {
                         url += '&ban=True';
                     }
-                } else if (ban_author.checked) {
+                } else if (ban_author && ban_author.checked) {
                     url += '?ban=True';
                 }
                 console.log(url);

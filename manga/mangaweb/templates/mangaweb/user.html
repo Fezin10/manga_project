@@ -59,7 +59,7 @@
                             class="figure-img img-thumbnail index_image" alt="{{ manga.name }} thumbnail"
                             >
                         </a>
-                        <figcaption class="figure-caption text-center {% if manga.status == 'A' %}retained_text{% endif %}">{{ manga.name }}</figcaption>
+                        <figcaption class="figure-caption text-center {% if manga.retained %}retained_text{% endif %}">{{ manga.name }}</figcaption>
                     </figure>
                 </div>
             {% empty %}

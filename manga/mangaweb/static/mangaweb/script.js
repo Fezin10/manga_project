@@ -82,8 +82,14 @@ document.addEventListener('DOMContentLoaded', () => {
             function call(button) {
                 let url = button.getAttribute('data-url');
                 let check = document.querySelector('#fault');
+                let ban_author = document.querySelector('#ban_author');
                 if (check.checked) {
                     url += '?fault=True';
+                    if (ban_author.checked) {
+                        url += '&ban=True';
+                    }
+                } else if (ban_author.checked) {
+                    url += '?ban=True';
                 }
                 console.log(url);
                 return fetch(url)

@@ -3,7 +3,7 @@
 {% block title %}- {{ manga.name }}{% endblock %}
 {% block body %}
 <h2>{{ manga.name }}</h2>
-{% if manga.status == 'A' %}
+{% if manga.retained %}
 <h3 class="retained_text">Retained</h3>
 {% endif %}
 <div class="container">
@@ -46,7 +46,22 @@
             {% if user.is_authenticated %}
                 <div><button class="btn btn-primary" id="like_button" value="{% url 'mangalike' manga.id %}"></button></div>
                 {% if user == manga.author %}<br><div><a class="btn btn-primary" href="{% url 'editmanga' manga.id %}">Edit</a></div>{% endif %}
-                {% if user.moderator and manga.status != 'A' %}<br><div><a class="btn btn-warning" id="analysis_button" data-url="{% url 'retain_manga' manga.id %}">Retain for analysis</a></div>{% endif %}
+                {% if user.moderator and not manga.retained %}<br><div><a class="btn btn-warning" id="analysis_button" data-url="{% url 'retain_manga' manga.id %}">Retain for analysis</a></div>{% endif %}
+            {% endif %}
+            {% if manga.retained %}
+                <div>
+                    <p>Reason: {{ manga.retained_reason }}</p>
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="fault" id="fault">
+                        <label class="form-checkk-label" for="fault">Should the author get a fault?</label>
+
+                    </div>
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="ban_author" id="ban_author">
+                        <label class="form-check-label" for="ban_author">Should the author get banned?</label>
+                    </div>
+                    <div><a class="btn btn-primary" id="free_button" data-url="{% url 'free_manga' manga.id %}">Free</a> <a class="btn btn-danger" id="block_button" data-url="{% url 'block_manga' manga.id %}">Delete</a></div>
+                </div>
             {% endif %}
         </div>
     </div>

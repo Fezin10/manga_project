@@ -25,7 +25,9 @@ urlpatterns = [
     path("moderator/retain_user/<int:user_id>", views.retain_user, name="retain_user"),
     path("moderator/free_user/<int:user_id>", views.free_user, name="free_user"),
     path("moderator/block_user/<int:user_id>", views.block_user, name="block_user"),
-
+    path("moderator/free_manga/<int:manga_id>", views.free_manga, name='free_manga'),
+    path("moderator/block_manga/<int:manga_id>", views.block_manga, name='block_manga'),
+    
 ]
 
 if settings.DEBUG:

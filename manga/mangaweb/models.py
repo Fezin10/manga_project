@@ -48,7 +48,6 @@ class Manga(models.Model):
         ('F', 'Finished'),
         ('R', 'Releasing'),
         ('N', 'Not released'),
-        ('A', 'Retained for analysis')
     ]
 
     id = models.AutoField(primary_key=True)
@@ -61,6 +60,9 @@ class Manga(models.Model):
     likes = models.ManyToManyField(User, related_name='liked_manga', blank=True)
     releasedate = models.DateField(null=True, blank=True)
     enddate = models.DateField(null=True, blank=True)
+    retained = models.BooleanField(default=False)
+    retained_reason = models.TextField(blank=True, null=True)
+
 
     def __str__(self):
         return f'{self.name} id:{self.id}'

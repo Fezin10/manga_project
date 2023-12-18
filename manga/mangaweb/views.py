@@ -156,6 +156,16 @@ def block_user(request, user_id):
 
 
 @login_required
+def deletemanga(request, manga_id):
+    try:
+        manga = Manga.objects.get(id=manga_id)
+    except:
+        raise Http404('Manga not found')
+    if request.user == manga.author:
+        manga.delete()
+    return HttpResponseRedirect(reverse(index))
+
+@login_required
 def edit(request, manga_id):
     # validation
     if not request.user.author:

@@ -28,6 +28,7 @@ urlpatterns = [
     path("moderator/free_manga/<int:manga_id>", views.free_manga, name='free_manga'),
     path("moderator/block_manga/<int:manga_id>", views.block_manga, name='block_manga'),
     path("moderator/retained", views.retained, name="retained"),
+    path("deletemanga/<int:manga_id>", views.deletemanga, name='deletemanga'),
     
 ]
 

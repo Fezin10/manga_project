@@ -3,6 +3,9 @@
 {% block title %}- {{ manga.name }}{% endblock %}
 {% block body %}
 <h2>{{ manga.name }}</h2>
+{% if message %}
+<h3 class="message">{{ message }}</h3>
+{% endif %}
 {% if manga.retained %}
 <h3 class="retained_text">Retained</h3>
 {% endif %}
@@ -45,7 +48,7 @@
             <div id="likes">Likes: {{ manga.likes.count }}</div>
             {% if user.is_authenticated %}
                 <div><button class="btn btn-primary" id="like_button" value="{% url 'mangalike' manga.id %}">{% if data.liked %}Unlike{% else %}Like{% endif %}</button></div>
-                {% if user == manga.author %}<br><div><a class="btn btn-primary" href="{% url 'editmanga' manga.id %}">Edit</a></div>{% endif %}
+                {% if user == manga.author %}<br><div><a class="btn btn-primary" href="{% url 'editmanga' manga.id %}">Edit</a><a class="btn btn-danger" href="{% url 'deletemanga' manga.id %}" id="deletemanga_button">Delete</a></div>{% endif %}
                 {% if user.moderator and not manga.retained %}<br><div><a class="btn btn-warning" id="analysis_button" data-url="{% url 'retain_manga' manga.id %}">Retain for analysis</a></div>{% endif %}
             {% endif %}
             {% if manga.retained %}

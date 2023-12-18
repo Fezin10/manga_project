@@ -42,6 +42,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Delete the manga of the page you are if you're the author of the manga
+    if (document.querySelector('#deletemanga_button')){
+        let button = document.querySelector('#deletemanga_button');
+        button.addEventListener('click', (event) => {
+            let confirmation = confirm('Are you sure you want to delete the manga?')
+            if (!confirmation) {
+                event.preventDefault();
+            }
+        })
+    }
+
     // Follow button for the userpage
     if (document.querySelector("#follow_button")) {
         let follow_button = document.querySelector("#follow_button");

@@ -6,7 +6,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.db import models
 
-from . import helper
+from . import uploaders
 
 
 # User related fields
@@ -17,7 +17,7 @@ class User(AbstractUser):
     retain_reason = models.TextField(blank=True, null=True)
     faults = models.PositiveSmallIntegerField(default=0)
     premium = models.BooleanField(default=False)
-    icon = models.ImageField(upload_to=helper.user, null=True, blank=True)
+    icon = models.ImageField(upload_to=uploaders.user, null=True, blank=True)
     following = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='followed_by')
 
 
@@ -55,7 +55,7 @@ class Manga(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='works')
     genres = models.ManyToManyField(Genre)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
-    thumb = models.ImageField(upload_to=helper.manga_thumb, null=True, blank=True)
+    thumb = models.ImageField(upload_to=uploaders.manga_thumb, null=True, blank=True)
     sinopse = models.TextField(max_length=300, null=True, blank=True)
     likes = models.ManyToManyField(User, related_name='liked_manga', blank=True)
     releasedate = models.DateField(null=True, blank=True)
@@ -71,7 +71,7 @@ class Manga(models.Model):
 class Page(models.Model):
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='pages')
     page_number = models.PositiveSmallIntegerField()
-    page_content = models.ImageField(upload_to=helper.manga_page)
+    page_content = models.ImageField(upload_to=uploaders.manga_page)
 
     def __str__(self):
         return f'Page {self.page_number} chapter {self.chapter.chapter_number} manga {self.chapter.manga}'

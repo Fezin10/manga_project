@@ -1,7 +1,7 @@
-import os
 from django.contrib.auth import login
 from django.contrib.auth.hashers import check_password
 from django.http import Http404
+from django.db.models import Count
 from django_ratelimit.decorators import ratelimit
 from .models import *
 
@@ -15,6 +15,67 @@ def change_password(user, old, new, check):
             return False
     else:
         return False
+
+
+# apply the filters to a mangas query and return the filtered query
+def filters(request):
+    filters = dict()    
+    
+    query = request.GET.get('query')
+    if query:
+        mangas = Manga.objects.filter(name__icontains=request.GET.get('query')).exclude(retained=True, author__retained=True)
+        filters['query'] = request.GET.get('query')
+    else:
+        mangas = Manga.objects.exclude(retained=True, author__retained=True)
+
+    if request.user.is_authenticated:
+        if request.GET.get('liked'):
+            mangas = mangas.filter(likes=request.user)
+            filters['liked'] = True
+        if request.GET.get('authors'):
+            mangas = mangas.filter(author__in=request.user.following.all())
+            filters['authors'] = True
+
+    status = request.GET.getlist('status')
+    if status:
+        mangas = mangas.filter(status__in=status)
+        filters['status'] = status
+
+    dropdown_genres = Genre.objects.all().order_by('genre')
+    genres = request.GET.getlist('genres')
+    if genres:
+        mangas = mangas.filter(genres__in=dropdown_genres.filter(genre__in=genres))
+        filters['genres'] = genres
+    sort = request.GET.get('sort')
+    if sort:
+        if sort == 'az':
+            mangas = mangas.order_by('name')
+            filters['sort'] = 'az'
+        elif sort == 'za':
+            mangas = mangas.order_by('-name')
+            filters['sort'] = 'za'
+        elif sort == 'imp':
+            mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('num_likes', 'num_views', 'name')
+            filters['sort'] = 'imp'
+        elif sort == 'pop':
+            mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
+            filters['sort'] = 'pop'
+    else:
+        mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
+    
+    return mangas, filters, dropdown_genres
+
+
+# Create an url to be used in get requests from the filters
+def filters_to_url(filters):
+    url = ''
+    for k in filters.keys():
+        if type(filters[k]) == list:
+            for v in filters[k]:
+                url += f'{k}={v}&'
+        else:
+            url += f'{k}={filters[k]}&'
+    return url.rstrip('&')
 
 
 # check if a given manga have correct data
@@ -31,27 +92,6 @@ def image_size_validation(image, size):
 def login_user(request, user):
     login(request, user)
 
-
-# generate the path to store the thumb image of some manga
-def manga_thumb(instance, filename):
-    manga_id = instance.id
-    manga_name = instance.name
-    file_extension = os.path.splitext(filename)[1].lower()
-
-    return f"manga/{manga_name}/{manga_id}/thumb{file_extension}"
-
-
-# generate a path to store a page of some chapter of some manga
-def manga_page(instance, filename):
-    manga_id = instance.chapter.manga.id
-    manga_name = instance.chapter.manga.name
-    chapter_number = instance.chapter.chapter_number
-    page_number = f"{instance.page_number:03d}"
-    file_extension = os.path.splitext(filename)[1].lower()
-
-    return f"manga/{manga_name}/{manga_id}/{chapter_number}/{page_number}{file_extension}"
-
-
 def moderator_required(view):
     def wrapper(request, *args, **kwargs):
         if request.user.is_authenticated and request.user.moderator:
@@ -59,9 +99,3 @@ def moderator_required(view):
         else:
             raise Http404()
     return wrapper
-
-
-def user(instance, filename):
-    user_id = instance.id
-    file_extension = os.path.splitext(filename)[1].lower()
-    return f"user/{user_id}/icon{file_extension}"

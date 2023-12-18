@@ -401,63 +401,10 @@ def mangaread(request, manga_id, chapter_number):
 
 
 def mangas(request):
-    # Base variables
-    filters = dict()
-    query = request.GET.get('query')
-    if query:
-        mangas = Manga.objects.filter(name__icontains=query).exclude(retained=True)
-        filters['query'] = query
-    else:
-        mangas = Manga.objects.exclude(retained=True)
-    mangas.exclude(author__retained=True)
-    dropdown_genres = Genre.objects.all().order_by('genre')
-
-
-    # change the mangas query depending on the filters requested by the user
-    if request.user.is_authenticated:
-        if request.GET.get('liked'):
-            mangas = mangas.filter(likes=request.user)
-            filters['liked'] = True
-        if request.GET.get('authors'):
-            mangas = mangas.filter(author__in=request.user.following.all())
-            filters['authors'] = True
-
-    status = request.GET.getlist('status')
-    if status:
-        mangas = mangas.filter(status__in=status)
-        filters['status'] = status
-
-    genres = request.GET.getlist('genres')
-    if genres:
-        mangas = mangas.filter(genres__in=dropdown_genres.filter(genre__in=genres))
-        filters['genres'] = genres
-    sort = request.GET.get('sort')
-    if sort:
-        if sort == 'az':
-            mangas = mangas.order_by('name')
-            filters['sort'] = 'az'
-        elif sort == 'za':
-            mangas = mangas.order_by('-name')
-            filters['sort'] = 'za'
-        elif sort == 'imp':
-            mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('num_likes', 'num_views', 'name')
-            filters['sort'] = 'imp'
-        elif sort == 'pop':
-            mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
-            filters['sort'] = 'pop'
-    else:
-        mangas = mangas.annotate(num_likes=Count('likes'), num_views=Count('chapters__read')).order_by('-num_likes', '-num_views', 'name')
-
+    mangas, filters, dropdown_genres = helper.filters(request)
     mangas = Paginator(mangas, 10 if request.user_agent.is_mobile else 20)
     page = int(request.GET.get('page')) if request.GET.get('page') else 1
-    data = {'page': page, 'num_pages': mangas.num_pages, 'before': page-1 > 0, 'after': page+1 <= mangas.num_pages, 'filters': ''}
-    for k in filters.keys():
-        if type(filters[k]) == list:
-            for v in filters[k]:
-                data['filters'] += f'{k}={v}&'
-        else:
-            data['filters'] += f'{k}={filters[k]}&'
-    data['filters'] = data['filters'].rstrip('&')
+    data = {'page': page, 'num_pages': mangas.num_pages, 'before': page-1 > 0, 'after': page+1 <= mangas.num_pages, 'filters': helper.filters_to_url(filters)}
 
 
     return render(request, 'mangaweb/index.html', {'mangas': mangas.page(page), 'genres': dropdown_genres, 'filters': filters, 'data': data})

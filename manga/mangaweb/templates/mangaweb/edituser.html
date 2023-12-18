@@ -9,7 +9,7 @@
         <div class="message">{{ message }}</div>
     {% endif %}
 
-    <form action="{% url 'edituser' %}" method="post" enctype="multipart/form-data">
+    <form action="{% url 'edituser' %}" method="post" enctype="multipart/form-data" id="edituser_form">
         {% csrf_token %}
         <div class="mb-3">
             <label for="username" class="form-label">Name</label>

@@ -5,7 +5,8 @@
 {% if message %}
     <h3 class="message">{{ message }}</h3>
 {% endif %}
-<form action="{% url 'addmanga' %}" method="post" enctype="multipart/form-data">
+<h4 class="message" id="message"></h4>
+<form action="{% url 'addmanga' %}" method="post" enctype="multipart/form-data" id="addmanga_form">
     {% csrf_token %}
     <div class="mb-3">
         <label for="manga_name" class="form-label">Manga name</label>

@@ -1,4 +1,99 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // Retain an user or manga to analysis
+    if (document.querySelector("#analysis_button")) {
+        let analysis = document.querySelector("#analysis_button");
+        analysis.addEventListener("click", () => {
+            let check = window.prompt("Report the problem: ");
+            if (check !== null) {
+                fetch(`${analysis.getAttribute("data-url")}?reason=${check}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data["status"] === "success") {
+                            location.reload();
+                        } else {
+                            alert("Fail");
+                        }
+                    });
+            }
+        });
+    }
+
+    // Let the user register themself as an author
+    if (document.querySelector("#author_button")) {
+        let author_button = document.querySelector("#author_button");
+        author_button.addEventListener("click", () => {
+            fetch(author_button.value)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data["status"] == "success") {
+                        document.querySelector("#user_author_div").innerHTML = "Author: True";
+                    }
+                });
+        });
+    }
+
+    // Count how much caracters the user have left in their manga sinopse
+    if (document.querySelector("#counter")) {
+        let counter = document.querySelector("#counter");
+        let sinopse = document.querySelector("#sinopse");
+        counter.innerText = 300 - sinopse.value.length + " characters left.";
+        sinopse.addEventListener("input", () => {
+            counter.innerText = 300 - sinopse.value.length + " characters left.";
+        });
+    }
+
+    // Follow button for the userpage
+    if (document.querySelector("#follow_button")) {
+        let follow_button = document.querySelector("#follow_button");
+        follow_button.addEventListener("click", () => {
+            fetch(follow_button.value)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data["status"] !== "success") {
+                        alert("Fail when trying to un/follow the user");
+                    } else {
+                        if (data["following"] == true) {
+                            follow_button.innerText = "Unfollow";
+                        } else {
+                            follow_button.innerText = "Follow";
+                        }
+                        document.querySelector("#followers").innerText = `Followers: ${data["following_count"]}`;
+                    }
+                });
+        });
+    }
+
+    // Free or block some user or manga
+    if (document.querySelector("#free_button")) {
+        let free = document.querySelector("#free_button");
+        let ban = document.querySelector("#block_button");
+
+        function call(event) {
+            let url = event.currentTarget.getAttribute("data-url");
+            let check = document.querySelector("#fault");
+            let ban_author = document.querySelector("#ban_author");
+            if (check.checked) {
+                url += "?fault=True";
+                if (ban_author && ban_author.checked) {
+                    url += "&ban=True";
+                }
+            } else if (ban_author && ban_author.checked) {
+                url += "?ban=True";
+            }
+            fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data["status"] === "success") {
+                        location.reload();
+                    } else {
+                        alert("Operation failed!");
+                    }
+                });
+        }
+        ban.addEventListener("click", call);
+        free.addEventListener("click", call);
+    }
+
     // Function to create a preview for the image files sended in some pages
     if (document.querySelector("#image_preview")) {
         let preview = document.querySelector("#image_preview");
@@ -58,56 +153,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector("#image_input").addEventListener("change", preview_image);
     }
 
-    // Retain an user or manga to analysis
-    if (document.querySelector("#analysis_button")) {
-        let analysis = document.querySelector("#analysis_button");
-        analysis.addEventListener("click", () => {
-            let check = window.prompt("Report the problem: ");
-            if (check !== null) {
-                fetch(`${analysis.getAttribute("data-url")}?reason=${check}`)
-                    .then((response) => response.json())
-                    .then((data) => {
-                        if (data["status"] === "success") {
-                            location.reload();
-                        } else {
-                            alert("Fail");
-                        }
-                    });
-            }
-        });
-    }
-
-    // Free or block some user or manga
-    if (document.querySelector("#free_button")) {
-        let free = document.querySelector("#free_button");
-        let ban = document.querySelector("#block_button");
-
-        function call(event) {
-            let url = event.currentTarget.getAttribute("data-url");
-            let check = document.querySelector("#fault");
-            let ban_author = document.querySelector("#ban_author");
-            if (check.checked) {
-                url += "?fault=True";
-                if (ban_author && ban_author.checked) {
-                    url += "&ban=True";
-                }
-            } else if (ban_author && ban_author.checked) {
-                url += "?ban=True";
-            }
-            fetch(url)
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data["status"] === "success") {
-                        location.reload();
-                    } else {
-                        alert("Operation failed!");
-                    }
-                });
-        }
-        ban.addEventListener("click", call);
-        free.addEventListener("click", call);
-    }
-
     // Like button for the mangapage
     if (document.querySelector("#like_button")) {
         let like_button = document.querySelector("#like_button");
@@ -124,51 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             like_button.innerText = "Like";
                         }
                         document.querySelector("#likes").innerText = `Likes: ${data["likes"]}`;
-                    }
-                });
-        });
-    }
-
-    // Follow button for the userpage
-    if (document.querySelector("#follow_button")) {
-        let follow_button = document.querySelector("#follow_button");
-        follow_button.addEventListener("click", () => {
-            fetch(follow_button.value)
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data["status"] !== "success") {
-                        alert("Fail when trying to un/follow the user");
-                    } else {
-                        if (data["following"] == true) {
-                            follow_button.innerText = "Unfollow";
-                        } else {
-                            follow_button.innerText = "Follow";
-                        }
-                        document.querySelector("#followers").innerText = `Followers: ${data["following_count"]}`;
-                    }
-                });
-        });
-    }
-
-    // Count how much caracters the user have left in their manga sinopse
-    if (document.querySelector("#counter")) {
-        let counter = document.querySelector("#counter");
-        let sinopse = document.querySelector("#sinopse");
-        counter.innerText = 300 - sinopse.value.length + " characters left.";
-        sinopse.addEventListener("input", () => {
-            counter.innerText = 300 - sinopse.value.length + " characters left.";
-        });
-    }
-
-    // Let the user register themself as an author
-    if (document.querySelector("#author_button")) {
-        let author_button = document.querySelector("#author_button");
-        author_button.addEventListener("click", () => {
-            fetch(author_button.value)
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data["status"] == "success") {
-                        document.querySelector("#user_author_div").innerHTML = "Author: True";
                     }
                 });
         });
@@ -279,8 +279,184 @@ document.addEventListener("DOMContentLoaded", () => {
             null;
         }
     }
+
+    // VALIDATIONS
+
+    // addchapter page
+    if (document.querySelector("#addchapter_form")) {
+        let form = document.querySelector("#addchapter_form");
+        let message = document.querySelector("#message");
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            message.innerText = "";
+            let error = false;
+            let chapter = document.querySelector("#chapter").value;
+            if (!Number.isInteger(parseInt(chapter)) || chapter < 1 || chapter > 32767) {
+                message.innerText += " Invalid chapter value!";
+                error = true;
+            }
+            let images = document.querySelector("#image_input").files;
+            for (let i = 0; i < images.length; i++) {
+                if (!isImage(images[i])) {
+                    message.innerText += " Invalid files given as images!";
+                    error = true;
+                    break;
+                }
+            }
+            if (!error) {
+                form.submit();
+            }
+        });
+    }
+
+    // addmanga page
+    if (document.querySelector("#addmanga_form")) {
+        let form = document.querySelector("#addmanga_form");
+        let message = document.querySelector("#message");
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            message.innerText = "";
+            let error = false;
+
+            let manga_name = document.querySelector("#manga_name").value;
+            if (manga_name.length > 50 || manga_name.length < 1) {
+                error = true;
+                message.innerText += " Invalid manga name!";
+            }
+            let status = document.querySelector("#status").value;
+            if (status !== "F" && status !== "R" && status !== "N") {
+                error = true;
+                message.innerText += " Invalid status!";
+            }
+            let sinopse = document.querySelector("#sinopse").value;
+            if (sinopse.length > 300) {
+                error = true;
+                message.innerText += " Sinopse is too long!";
+            }
+            let releasedate = document.querySelector("#releasedate").value;
+            if (releasedate && !isValidDate(releasedate)) {
+                error = true;
+                message.innerText += " Invalid release date!";
+            }
+            let enddate = document.querySelector("#enddate").value;
+            if (enddate && !isValidDate(enddate)) {
+                error = true;
+                message.innerText += " Invalid end date!";
+            }
+            let image = document.querySelector("#image_input").files[0];
+            if (image && !isImage(image)) {
+                error = true;
+                message.innerText += " Invalid file given as image!";
+            }
+
+            if (!error) {
+                form.submit();
+            }
+        });
+    }
+
+    // edituser page
+    if (document.querySelector("#edituser_form")) {
+        let form = document.querySelector("#edituser_form");
+        let message = document.querySelector("#message");
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            message.innerText = "";
+            let error = false;
+
+            let username = form.querySelector("#username").value;
+            if (username.length < 1) {
+                error = true;
+                message.innerText += "Invalid username";
+            }
+
+            let password = form.querySelector("#password").value;
+            if (password && password.length < 4) {
+                error = true;
+                message.innerText += " Password is too short!";
+            }
+            let confirmation = form.querySelector("#confirmation").value;
+            if (password && !confirmation) {
+                error = true;
+                message.innerText += " You need to provide a password and confirm it";
+            }
+            if (password && confirmation && password !== confirmation) {
+                error = true;
+                message.innerText += " The password and the confirmation must match!";
+            }
+            let image = form.querySelector("#image_input").files[0];
+            if (image && !isImage(image)) {
+                error = true;
+                message.innerText += " Invalid file given as icon";
+            }
+
+            if (!error) {
+                form.submit();
+            }
+        });
+    }
+
+    // register page
+    if (document.querySelector("#register_form")) {
+        let form = document.querySelector("#register_form");
+        let message = document.querySelector("#message");
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            message.innerText = "";
+            let error = false;
+
+            let username = form.querySelector("#username").value;
+            if (username.length < 1) {
+                error = true;
+                message.innerText += "Invalid username";
+            }
+
+            let email = form.querySelector("#email").value;
+            if (!isValidEmail(email)) {
+                error = true;
+                message.innerText += " Invalid email!";
+            }
+
+            let password = form.querySelector("#password").value;
+            let confirmation = form.querySelector("#confirmation").value;
+            if (!password || !confirmation) {
+                error = true;
+                message.innerText += " You need to provide a password and confirm it";
+            } else if (password.length < 4) {
+                error = true;
+                message.innerText += " Password is too short!";
+            } else if (password !== confirmation) {
+                error = true;
+                message.innerText += " The password and the confirmation must match!";
+            }
+
+            let image = form.querySelector("#image_input").files[0];
+            if (image && !isImage(image)) {
+                error = true;
+                message.innerText += " Invalid file given as icon";
+            }
+
+            if (!error) {
+                form.submit();
+            }
+        });
+    }
 });
+
+function isImage(file) {
+    return file.type.startsWith("image/");
+}
 
 function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+function isValidDate(dateString) {
+    const parsedDate = new Date(dateString);
+    return !isNaN(parsedDate.getTime()) && dateString === parsedDate.toISOString().split("T")[0];
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 }

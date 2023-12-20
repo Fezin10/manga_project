@@ -98,6 +98,10 @@
     margin: 2rem 0;
 }
 
+#like_button {
+    cursor: pointer;
+}
+
 #moderator_buttons {
     margin-top: 0.5rem;
     text-align: center;

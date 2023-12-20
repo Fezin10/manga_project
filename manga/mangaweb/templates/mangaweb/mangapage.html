@@ -57,7 +57,7 @@
             <div>Views: {{ views }}</div>
             <div id="likes">Likes: {{ manga.likes.count }}</div>
             {% if user.is_authenticated %}
-                <div><button class="btn btn-primary" id="like_button" value="{% url 'mangalike' manga.id %}">{% if data.liked %}Unlike{% else %}Like{% endif %}</button></div>
+                <div><a id="like_button" data-url="{% url 'mangalike' manga.id %}">{% if data.liked %}❤️{% else %}🤍{% endif %}</a></div>
                 {% if user == manga.author %}<div class="sm_mtop"><a class="btn btn-primary" href="{% url 'editmanga' manga.id %}">Edit</a><a class="btn btn-danger" href="{% url 'deletemanga' manga.id %}" id="deletemanga_button">Delete</a></div>{% endif %}
                 {% if user.moderator and not manga.retained %}<div class="sm_mtop"><a class="btn btn-warning" id="analysis_button" data-url="{% url 'retain_manga' manga.id %}">Retain for analysis</a></div>{% endif %}
             {% endif %}

@@ -210,16 +210,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.querySelector("#like_button")) {
         let like_button = document.querySelector("#like_button");
         like_button.addEventListener("click", () => {
-            fetch(like_button.value)
+            fetch(like_button.getAttribute('data-url'))
                 .then((response) => response.json())
                 .then((data) => {
                     if (data["status"] !== "success") {
                         alert("Can not complete the like process");
                     } else {
                         if (data["liked"] === true) {
-                            like_button.innerText = "Unlike";
+                            like_button.innerText = "❤️";
                         } else {
-                            like_button.innerText = "Like";
+                            like_button.innerText = "🤍";
                         }
                         document.querySelector("#likes").innerText = `Likes: ${data["likes"]}`;
                     }

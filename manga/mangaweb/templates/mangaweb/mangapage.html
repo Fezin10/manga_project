@@ -26,19 +26,29 @@
             </div>
             <div>Status: {{ manga.get_status_display }}</div>
             <div>Release date: 
-                {% if manga.releasedate and manga.status != "N" %}
-                    {{ manga.releasedate }}
-                {% elif manga.releasedate %}
-                    To be released in {{ manga.releasedate }}
+                {% if manga.releasedate %}
+                    {% if manga.status == "N" %}
+                        To be released in {{ manga.releasedate }}
+                    {% else %}
+                        {{ manga.releasedate }}
+                    {% endif %}
                 {% elif manga.status == "N" %}
                     Not released
                 {% else %}
                     Not specified
                 {% endif %}
             </div>
-            {% if manga.enddate %}
-            <div>End date: {{ manga.enddate }}</div>
-            {% endif %}
+            <div>End date: 
+                {% if manga.enddate %}
+                    {% if manga.status == "F" %}
+                        {{ manga.enddate }}
+                    {% else %}
+                        Estimated  {{ manga.enddate }}
+                    {% endif %}
+                {% else %}
+                    Not specified
+                {% endif %}
+            </div>
             {% if manga.sinopse %}
                 <div class="sinopse">Sinopse: {{ manga.sinopse }}</div>
             {% else %}
@@ -69,7 +79,7 @@
         </div>
     </div>
 </div>
-<nav aria-label="Page navigation">
+<nav aria-label="Page navigation" class="sm_mtop">
     <ul class="pagination justify-content-center">
       <li class="page-item {% if not data.before %}disabled{% endif %}">
         <a class="page-link" href="{% if data.before %}{% url 'mangapage' %}?page={{ data.page|add:'-1' }}{% endif %}" aria-label="Previous">

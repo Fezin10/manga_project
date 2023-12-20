@@ -73,7 +73,7 @@
         <button type="submit" class="btn btn-primary">Apply</button>
     </form>
 </div>
-<nav aria-label="Page navigation">
+<nav aria-label="Page navigation" class="sm_mtop">
     <ul class="pagination justify-content-center">
       <li class="page-item {% if not data.before %}disabled{% endif %}">
         <a class="page-link" href="{% if data.before %}{% url 'mangas' %}?page={{ data.page|add:'-1' }}{% if data.filters %}&{{ data.filters }}{% endif %}{% endif %}" aria-label="Previous">

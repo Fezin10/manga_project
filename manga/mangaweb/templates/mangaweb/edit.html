@@ -1,10 +1,11 @@
 {% extends "mangaweb/layout.html" %}
 {% block title %}- Edit Manga{% endblock %}
 {% block body %}
-<h2>Edit an manga entry</h2>
+<h2>Edit a manga entry</h2>
 {% if message %}
     <h3 class="message">{{ message }}</h3>
 {% endif %}
+<h4 id="message" class="message"></h4>
 <form action="{% url 'editmanga' manga.id %}" method="post" enctype="multipart/form-data" id="addmanga_form">
     {% csrf_token %}
     <div class="mb-3">
@@ -13,7 +14,7 @@
         <span class="form-text">Can't edit the manga name, create a new entry if needed</span>
     </div>
     <div class="mb-3">
-        <label for="genres" class="form-label">Genres - optional</label>
+        <label for="genres" class="form-label">Genres - Choose at least one or a custom genre</label>
         <select class="form-select" size="5" multiple id="genres" name="genres">
             {% for genre in genres %}
             <option value="{{ genre }}"{% if genre in manga.genres.all %}selected{% endif %}>{{ genre }}</option>
@@ -22,11 +23,9 @@
           <span class="form-text">CTRL+ left click to choose multiple genres</span>
     </div>
     <div class="mb-3">
-        <label for="custom_genres" class="form-label">Custom genres - optional</label>
+        <label for="custom_genres" class="form-label">Custom genres - Use this if the genre you want is not available</label>
         <input type="text" name="custom_genre" class="form-control" id="custom_genres" placeholder="Genre1, genre2, genre3, etc">
-        <span class="form-text">Use a comma to separate each genre</span> <br>
-        <span class="form-text">Use this if the genre you want is not available, genre name shouldnt be larger than 20 characters</span> <br>
-        <span class="form-text">Creating unecessary or problematic genre names will lead to ban</span>
+        <span class="form-text">Use a comma to separate each genre, genres shouldnt be larger than 20 characters</span>
     </div>
     <div class="mb-3">
         <label for="status" class="form-label">Manga status</label>
@@ -41,7 +40,7 @@
         <label for="sinopse" class="form-label">Sinopse</label>
         <textarea class="form-control" name="sinopse" id="sinopse">{{ manga.sinopse }}</textarea>
         <span class="form-text">Max 300 characters</span><br>
-        <span id="counter"></span>
+        <p id="counter"></p>
     </div>
     <div class="mb-3">
         <label for="releasedate" class="form-label">Release date - optional</label>
@@ -58,18 +57,18 @@
         <input class="form-control" type="file" name="thumb" accept="image/*" id="image_input">
         <span class="form-text">Max image size: 5MB</span>
     </div>
+    <input class="btn btn-primary" type="submit" value="Submit manga entry">
     <div id="image_preview" class="container text-center">
         {% if manga.thumb %}
         <div class="row">
             <div class="col-3">
                 <figure class="figure">
-                    <img src="{{ manga.thumb.url }}" alt="{{ manga.name}} thumbnail" class="figure-img img-fluid rounded">
+                    <img src="{{ manga.thumb.url }}" alt="{{ manga.name}} thumbnail" class="figure-img img-fluid">
                     <figcaption class="figure-caption">{{ manga.name }} thumb</figcaption>
                 </figure>
             </div>
         </div>
         {% endif %}
     </div>
-    <input class="btn btn-primary" type="submit" value="Submit manga entry">
 </form>
 {% endblock %}

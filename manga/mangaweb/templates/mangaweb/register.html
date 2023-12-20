@@ -9,6 +9,8 @@
         <div class="message">{{ message }}</div>
     {% endif %}
 
+    <h4 class="message" id="message"></h4>
+
     <form action="{% url 'register' %}" method="post" enctype="multipart/form-data" id="register_form">
         {% csrf_token %}
         <div class="mb-3">
@@ -36,7 +38,7 @@
         <div id="image_preview" class="container text-center"></div>
         <input class="btn btn-primary" type="submit" value="Register">
     </form>
-
-    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+    <p>Already have an account? <a href="{% url 'login' %}">Log In here.</a></p>
+    
 
 {% endblock %}

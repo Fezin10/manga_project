@@ -16,7 +16,6 @@ class User(AbstractUser):
     retained = models.BooleanField(default=False)
     retain_reason = models.TextField(blank=True, null=True)
     faults = models.PositiveSmallIntegerField(default=0)
-    premium = models.BooleanField(default=False)
     icon = models.ImageField(upload_to=uploaders.user, null=True, blank=True)
     following = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='followed_by')
 

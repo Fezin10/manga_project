@@ -4,7 +4,7 @@
 {% block body %}
 <h2>{{ pageuser.username }}</h2>
 {% if pageuser.retained %}
-<h3 class="retained_text">Retained</h3>
+<h3 class="message">Retained</h3>
 {% endif %}
 <div class="container">
     <div class="row">
@@ -12,9 +12,8 @@
              alt="{{ pageuser.username }} icon" class="img-thumbnail pageuser_icon"></div>
         <div id="page_content">
             <div>Account created at: {{ pageuser.date_joined|date:"Y-m-d" }}</div>
-            <div>Premium: {{ pageuser.premium }}</div>
             <div>Staff: {{ pageuser.moderator }}</div>
-            <div id="user_author_div">Author: {{ pageuser.author }} {% if not pageuser.author and user == pageuser %}<button class="btn btn-primary" id="author_button" value="{% url 'authorregister' %}">Be an author</button>{% endif %}</div>
+            <div id="user_author_div">Author:{% if not pageuser.author and user == pageuser %}<button class="btn btn-primary" id="author_button" value="{% url 'authorregister' %}">Be an author</button>{% else %} {{ pageuser.author }}{% endif %}</div>
             {% if pageuser.author %}
             <div>Works: {{ pageuser.works.count }}</div>
             {% endif %}
@@ -22,28 +21,30 @@
             <div>Following: {{ pageuser.following.count }}</div>
             {% if user.is_authenticated %}
                 {% if user != pageuser %}
-                    <div><button id="follow_button" class="btn btn-primary" value="{% url 'follow' pageuser.id %}">{% if following %}Unfollow{% else %}Follow{% endif %}</button></div>
+                    <div><button id="follow_button" class="btn btn-primary sm_mtop" value="{% url 'follow' pageuser.id %}">{% if following %}Unfollow{% else %}Follow{% endif %}</button></div>
                     {% if user.moderator %}
                         {% if not pageuser.retained %}
-                            <div><a class="btn btn-warning" id="analysis_button" data-url="{% url 'retain_user' pageuser.id %}">Retain for analysis</a></div>
+                            <div><a class="btn btn-warning sm_mtop" id="analysis_button" data-url="{% url 'retain_user' pageuser.id %}">Retain for analysis</a></div>
                         {% else %}
+                        <div id="moderator_div">
                             <p class="retain_reason_text">Reason: {{ pageuser.retain_reason }}</p>
-                            <div>
+                            <div class="moderator_checkbox">
                                 <input class="form-check-input" type="checkbox" name="fault" id="fault">
                                 <label class="form-checkk-label" for="fault">Should the user get a fault?</label>
                             </div>
-                            <div><a class="btn btn-primary" data-url="{% url 'free_user' pageuser.id %}" id="free_button">Free</a> <a class="btn btn-danger" data-url="{% url 'block_user' pageuser.id %}" id="block_button">Ban</a></div>
+                            <div id="moderator_buttons"><a class="btn btn-primary" data-url="{% url 'free_user' pageuser.id %}" id="free_button">Free</a> <a class="btn btn-danger" data-url="{% url 'block_user' pageuser.id %}" id="block_button">Ban</a></div>
+                        </div>
                         {% endif %}
                     {% endif %}
                 {% else %}
-                    <div><a class="btn btn-primary" href="{% url 'edituser' %}">Edit your profile</a></div>
+                    <div><a class="btn btn-primary sm_mtop" href="{% url 'edituser' %}">Edit your profile</a></div>
                 {% endif %}
             {% endif %}
         </div>
     </div>
 </div>
 {% if pageuser.author %}
-<h3>Works:</h3>
+<h3 class="sm_mtop">Works:</h3>
     <div class="container">
         <div class="row">
             {% for manga in mangas %}

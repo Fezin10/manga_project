@@ -9,6 +9,8 @@
         <div class="message">{{ message }}</div>
     {% endif %}
 
+    <h4 class="message" id="message"></h4>
+
     <form action="{% url 'edituser' %}" method="post" enctype="multipart/form-data" id="edituser_form">
         {% csrf_token %}
         <div class="mb-3">

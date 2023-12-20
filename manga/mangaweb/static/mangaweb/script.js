@@ -82,6 +82,19 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     }
 
+    if (document.querySelector('#filter_dropdown')) {
+        function stop(element) {
+            element.querySelectorAll('li').forEach((e) => {
+                e.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                })
+            })
+        }   
+        
+        stop(document.querySelector("#filter_dropdown"));
+        stop(document.querySelector("#genre_dropdown"));
+    }
+
     // Follow button for the userpage
     if (document.querySelector("#follow_button")) {
         let follow_button = document.querySelector("#follow_button");
@@ -159,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             let image = document.createElement("img");
                             image.src = e.target.result;
                             image.alt = `${i + 1} image preview`;
-                            image.className = "figure-img img-fluid rounded";
+                            image.className = "figure-img img-fluid";
                             figure.appendChild(image);
                             figure.appendChild(figcaption);
                             col.appendChild(figure);

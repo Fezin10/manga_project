@@ -1,5 +1,5 @@
-{% extends "mangaweb/layout.html" %} {% block title %}- Add Manga{% endblock %} {% block body %}
-<h2>Add chapter to your chapter</h2>
+{% extends "mangaweb/layout.html" %} {% block title %}- Add Chapter{% endblock %} {% block body %}
+<h2>Add chapters for your manga</h2>
 {% if message %}
 <h3 class="message">{{ message }}</h3>
 {% endif %}
@@ -8,7 +8,7 @@
     {% csrf_token %}
     <div class="mb-3">
         <label for="chapter" class="form-label">Which chapter are you adding?</label>
-        <input type="number" min="1" step="1" name="chapter" class="form-control" required placeholder="1" id="chapter" />
+        <input type="number" min="1" step="1" name="chapter" class="form-control" required placeholder="1" id="chapter"/>
         <span class="form-text">The number must be integer</span>
     </div>
     <div class="mb-3">
@@ -21,12 +21,12 @@
             {% endfor %}
         </select>
     </div>
-    <input class="btn btn-primary" type="submit" value="Submit chapter to the manga" />
     <div class="mb-3">
         <label for="image_input" class="form-label">Select the pages:</label>
         <input class="form-control" type="file" name="pages" accept="image/*" multiple id="image_input" required />
         <span class="form-text">Select the pages in order! Max image size: 5MB</span>
     </div>
+    <input class="btn btn-primary" type="submit" value="Submit chapter to the manga"/>
     <div id="image_preview" class="container text-center"></div>
 </form>
 {% endblock %}

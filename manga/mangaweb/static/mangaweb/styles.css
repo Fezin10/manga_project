@@ -80,6 +80,10 @@
     word-wrap: break-word;
 }
 
+#darmode {
+    padding-left: 10000px;
+}
+
 #image_preview {
     margin-bottom: 2rem;
 }
@@ -87,20 +91,4 @@
 #page_view {
     height: 90vh;
     vertical-align: center;
-}
-
-.dark_primary {
-    color: darkblue;
-}
-
-.dark_secondary {
-    color: blue;
-}
-
-.light_primary {
-    color: beige;
-}
-
-.light_secondary {
-    color: orange;
 }

@@ -42,6 +42,35 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Darkmode
+    {theme = localStorage.getItem("theme");
+    if (theme === null) {
+        localStorage.setItem("theme", "light");
+        theme = "light";
+    }
+    let darkmode = document.querySelector('#darkmode');
+    if (theme === "dark" || theme === "auto") {
+        document.documentElement.setAttribute("data-bs-theme", "dark");
+        darkmode.innerText = 'Light';
+    } else {
+        document.documentElement.removeAttribute("data-bs-theme");
+        darkmode.innerText = 'Dark';
+    }
+    darkmode.addEventListener('click', () => {
+        if (theme === "dark" || theme === "auto") {
+            theme = "light";
+            document.documentElement.removeAttribute("data-bs-theme");
+            darkmode.innerText = 'Dark';
+            localStorage.setItem("theme", theme);
+        } else {
+            theme = "dark";
+            document.documentElement.setAttribute("data-bs-theme", "dark");
+            darkmode.innerText = 'Light';
+            localStorage.setItem("theme", theme);
+        }
+    })
+    }
+
     // Delete the manga of the page you are if you're the author of the manga
     if (document.querySelector('#deletemanga_button')){
         let button = document.querySelector('#deletemanga_button');

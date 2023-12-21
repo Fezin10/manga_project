@@ -23,10 +23,10 @@ def filters(request):
     
     query = request.GET.get('query')
     if query:
-        mangas = Manga.objects.filter(name__icontains=request.GET.get('query')).exclude(retained=True, author__retained=True)
+        mangas = Manga.objects.filter(name__icontains=request.GET.get('query')).exclude(retained=True).exclude(author__retained=True)
         filters['query'] = request.GET.get('query')
     else:
-        mangas = Manga.objects.exclude(retained=True, author__retained=True)
+        mangas = Manga.objects.exclude(retained=True).exclude(author__retained=True)
 
     if request.user.is_authenticated:
         if request.GET.get('liked'):

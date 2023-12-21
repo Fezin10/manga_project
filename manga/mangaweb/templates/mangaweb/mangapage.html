@@ -1,108 +1,89 @@
-{% extends "mangaweb/layout.html" %}
-{% load static %}
-{% block title %}- {{ manga.name }}{% endblock %}
-{% block body %}
+{% extends "mangaweb/layout.html" %} {% load static %} {% block title %}- {{ manga.name }}{% endblock %} {% block body %}
 <h2>{{ manga.name }}</h2>
 {% if message %}
 <h3 class="message">{{ message }}</h3>
-{% endif %}
-{% if manga.retained %}
+{% endif %} {% if manga.retained %}
 <h3 class="message">Retained</h3>
 {% endif %}
 <div class="container">
     <div class="row">
-        <div id="page_image"><img src="{% if manga.thumb %}{{ manga.thumb.url }}{% else %}{% static 'mangaweb/images/image_placeholder.webp' %}{% endif %}"
-             alt="{{ manga.name }} Thumbnail" class="img-thumbnail mangapage_image"></div>
+        <div id="page_image"><img src="{% if manga.thumb %}{{ manga.thumb.url }}{% else %}{% static 'mangaweb/images/image_placeholder.webp' %}{% endif %}" alt="{{ manga.name }} Thumbnail" class="img-thumbnail mangapage_image" /></div>
+
         <div id="page_content">
             <div><a href="{% url 'userpage' manga.author.id %}" class="simple_a">Author: {{ manga.author }}</a></div>
-            <div>Genres:
+            <div>
+                Genres:
                 <ul>
                     {% for genre in manga.genres.all %}
-                        <li>{{ genre }}</li>
+                    <li>{{ genre }}</li>
                     {% empty %}
-                        <li>No genre specified</li>
+                    <li>No genre specified</li>
                     {% endfor %}
                 </ul>
             </div>
             <div>Status: {{ manga.get_status_display }}</div>
-            <div>Release date: 
-                {% if manga.releasedate %}
-                    {% if manga.status == "N" %}
-                        To be released in {{ manga.releasedate }}
-                    {% else %}
-                        {{ manga.releasedate }}
-                    {% endif %}
-                {% elif manga.status == "N" %}
-                    Not released
-                {% else %}
-                    Not specified
-                {% endif %}
+            <div>
+                Release date: {% if manga.releasedate %} {% if manga.status == "N" %} To be released in {{ manga.releasedate }} {% else %} {{ manga.releasedate }} {% endif %} {% elif manga.status == "N" %} Not released {% else %} Not
+                specified {% endif %}
             </div>
-            <div>End date: 
-                {% if manga.enddate %}
-                    {% if manga.status == "F" %}
-                        {{ manga.enddate }}
-                    {% else %}
-                        Estimated  {{ manga.enddate }}
-                    {% endif %}
-                {% else %}
-                    Not specified
-                {% endif %}
-            </div>
+            <div>End date: {% if manga.enddate %} {% if manga.status == "F" %} {{ manga.enddate }} {% else %} Estimated {{ manga.enddate }} {% endif %} {% else %} Not specified {% endif %}</div>
             {% if manga.sinopse %}
-                <div class="sinopse">Sinopse: {{ manga.sinopse }}</div>
+            <div class="sinopse">Sinopse: {{ manga.sinopse }}</div>
             {% else %}
-                <div>Sinopse: Not provided</div>
+            <div>Sinopse: Not provided</div>
             {% endif %}
             <div>Views: {{ views }}</div>
             <div id="likes">Likes: {{ manga.likes.count }}</div>
             {% if user.is_authenticated %}
-                <div><a id="like_button" data-url="{% url 'mangalike' manga.id %}">{% if data.liked %}❤️{% else %}🤍{% endif %}</a></div>
-                {% if user == manga.author %}<div class="sm_mtop"><a class="btn btn-primary" href="{% url 'editmanga' manga.id %}">Edit</a><a class="btn btn-danger" href="{% url 'deletemanga' manga.id %}" id="deletemanga_button">Delete</a></div>{% endif %}
-                {% if user.moderator and not manga.retained %}<div class="sm_mtop"><a class="btn btn-warning" id="analysis_button" data-url="{% url 'retain_manga' manga.id %}">Retain for analysis</a></div>{% endif %}
-            {% endif %}
-            {% if manga.retained %}
-                <div id="moderator_div">
-                    <h4>Moderator:</h4>
-                    <p>Reason: {{ manga.retained_reason }}</p>
-                    <div class="moderator_checkbox">
-                        <input class="form-check-input" type="checkbox" name="fault" id="fault">
-                        <label class="form-checkk-label" for="fault">Should the author get a fault?</label>
-                    </div>
-                    <div class="moderator_checkbox">
-                        <input class="form-check-input" type="checkbox" name="ban_author" id="ban_author">
-                        <label class="form-check-label" for="ban_author">Should the author get banned?</label>
-                    </div>
-                    <div id="moderator_buttons"><a class="btn btn-primary" id="free_button" data-url="{% url 'free_manga' manga.id %}">Free</a><a class="btn btn-danger" id="block_button" data-url="{% url 'block_manga' manga.id %}">Delete</a></div>
+            <div><a id="like_button" data-url="{% url 'mangalike' manga.id %}">{% if data.liked %}❤️{% else %}🤍{% endif %}</a></div>
+            {% if user == manga.author %}
+            <div class="sm_mtop"><a class="btn btn-primary" href="{% url 'editmanga' manga.id %}">Edit</a><a class="btn btn-danger" href="{% url 'deletemanga' manga.id %}" id="deletemanga_button">Delete</a></div>
+            {% endif %} {% if user.moderator and not manga.retained %}
+            <div class="sm_mtop"><a class="btn btn-warning" id="analysis_button" data-url="{% url 'retain_manga' manga.id %}">Retain for analysis</a></div>
+            {% endif %} {% endif %} {% if manga.retained %}
+            <div id="moderator_div">
+                <h4>Moderator:</h4>
+                <p>Reason: {{ manga.retained_reason }}</p>
+                <div class="moderator_checkbox">
+                    <input class="form-check-input" type="checkbox" name="fault" id="fault" />
+                    <label class="form-checkk-label" for="fault">Should the author get a fault?</label>
                 </div>
+                <div class="moderator_checkbox">
+                    <input class="form-check-input" type="checkbox" name="ban_author" id="ban_author" />
+                    <label class="form-check-label" for="ban_author">Should the author get banned?</label>
+                </div>
+                <div id="moderator_buttons">
+                    <a class="btn btn-primary" id="free_button" data-url="{% url 'free_manga' manga.id %}">Free</a><a class="btn btn-danger" id="block_button" data-url="{% url 'block_manga' manga.id %}">Delete</a>
+                </div>
+            </div>
             {% endif %}
         </div>
     </div>
 </div>
 <nav aria-label="Page navigation" class="sm_mtop">
     <ul class="pagination justify-content-center">
-      <li class="page-item {% if not data.before %}disabled{% endif %}">
-        <a class="page-link" href="{% if data.before %}{% url 'mangapage' %}?page={{ data.page|add:'-1' }}{% endif %}" aria-label="Previous">
-          <span aria-hidden="true"><strong>&laquo;</strong></span>
-        </a>
-      </li>
-      <li class="page-item active"><a class="page-link">{{ data.page }}</a></li>
-      <li class="page-item {% if not data.after %}disabled{% endif %}">
-        <a class="page-link" href="{% if data.after %}{% url 'mangapage' %}?page={{ data.page|add:'1' }}{% endif %}" aria-label="Next">
-          <span aria-hidden="true"><strong>&raquo;</strong></span>
-        </a>
-      </li>
+        <li class="page-item {% if not data.before %}disabled{% endif %}">
+            <a class="page-link" href="{% if data.before %}{% url 'mangapage' %}?page={{ data.page|add:'-1' }}{% endif %}" aria-label="Previous">
+                <span aria-hidden="true"><strong>&laquo;</strong></span>
+            </a>
+        </li>
+        <li class="page-item active"><a class="page-link">{{ data.page }}</a></li>
+        <li class="page-item {% if not data.after %}disabled{% endif %}">
+            <a class="page-link" href="{% if data.after %}{% url 'mangapage' %}?page={{ data.page|add:'1' }}{% endif %}" aria-label="Next">
+                <span aria-hidden="true"><strong>&raquo;</strong></span>
+            </a>
+        </li>
     </ul>
-  </nav>
+</nav>
 <div class="container">
     <div class="row">
-    {% for chapter in chapters %}
-        <div class="col"><a href="{% url 'mangaread' manga.id chapter.chapter_number %}" 
-            {% if user.is_authenticated and user in chapter.read.all %} class="btn btn-secondary"
-            {% else %} class="btn btn-primary"{% endif %}>{{ chapter.chapter_number|stringformat:"04d" }}</a></div>
-    {% empty %}
-        No chapters released
-    {% endfor %}
+        {% for chapter in chapters %}
+        <div class="col">
+            <a href="{% url 'mangaread' manga.id chapter.chapter_number %}" {% if user.is_authenticated and user in chapter.read.all %} class="btn btn-secondary" {% else %} class="btn btn-primary" {% endif %}>
+                {{ chapter.chapter_number|stringformat:"04d" }}
+            </a>
+        </div>
+        {% empty %} No chapters released {% endfor %}
     </div>
 </div>
 {% endblock %}

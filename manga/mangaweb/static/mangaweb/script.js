@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Let the user register themself as an author
     if (document.querySelector("#author_button")) {
         let author_button = document.querySelector("#author_button");
-        let url = author_button.getAttribute('data-url');
+        let url = author_button.getAttribute("data-url");
         author_button.removeAttribute("data-url");
         author_button.addEventListener("click", () => {
             fetch(url)
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (data["status"] == "success") {
                         location.reload();
                     } else {
-                        alert('Fail');
+                        alert("Fail");
                     }
                 });
         });
@@ -49,54 +49,56 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Darkmode
-    {theme = localStorage.getItem("theme");
-    if (theme === null) {
-        localStorage.setItem("theme", "light");
-        theme = "light";
-    }
-    let darkmode = document.querySelector('#darkmode');
-    if (theme === "dark" || theme === "auto") {
-        document.documentElement.setAttribute("data-bs-theme", "dark");
-        darkmode.innerText = 'Light';
-    } else {
-        document.documentElement.removeAttribute("data-bs-theme");
-        darkmode.innerText = 'Dark';
-    }
-    darkmode.addEventListener('click', () => {
-        if (theme === "dark" || theme === "auto") {
+    {
+        theme = localStorage.getItem("theme");
+        if (theme === null) {
+            localStorage.setItem("theme", "light");
             theme = "light";
-            document.documentElement.removeAttribute("data-bs-theme");
-            darkmode.innerText = 'Dark';
-            localStorage.setItem("theme", theme);
-        } else {
-            theme = "dark";
-            document.documentElement.setAttribute("data-bs-theme", "dark");
-            darkmode.innerText = 'Light';
-            localStorage.setItem("theme", theme);
         }
-    })
+        let darkmode = document.querySelector("#darkmode");
+        if (theme === "dark" || theme === "auto") {
+            document.documentElement.setAttribute("data-bs-theme", "dark");
+            darkmode.innerText = "Light";
+        } else {
+            document.documentElement.removeAttribute("data-bs-theme");
+            darkmode.innerText = "Dark";
+        }
+        darkmode.addEventListener("click", () => {
+            if (theme === "dark" || theme === "auto") {
+                theme = "light";
+                document.documentElement.removeAttribute("data-bs-theme");
+                darkmode.innerText = "Dark";
+                localStorage.setItem("theme", theme);
+            } else {
+                theme = "dark";
+                document.documentElement.setAttribute("data-bs-theme", "dark");
+                darkmode.innerText = "Light";
+                localStorage.setItem("theme", theme);
+            }
+        });
     }
 
     // Delete the manga of the page you are if you're the author of the manga
-    if (document.querySelector('#deletemanga_button')){
-        let button = document.querySelector('#deletemanga_button');
-        button.addEventListener('click', (event) => {
-            let confirmation = confirm('Are you sure you want to delete the manga?');
+    if (document.querySelector("#deletemanga_button")) {
+        let button = document.querySelector("#deletemanga_button");
+        button.addEventListener("click", (event) => {
+            let confirmation = confirm("Are you sure you want to delete the manga?");
             if (!confirmation) {
                 event.preventDefault();
             }
-        })
+        });
     }
 
-    if (document.querySelector('#filter_dropdown')) {
+    // Keep the dropdown menu open when clicking in the label
+    if (document.querySelector("#filter_dropdown")) {
         function stop(element) {
-            element.querySelectorAll('li').forEach((e) => {
-                e.addEventListener('click', (event) => {
+            element.querySelectorAll("li").forEach((e) => {
+                e.addEventListener("click", (event) => {
                     event.stopPropagation();
-                })
-            })
-        }   
-        
+                });
+            });
+        }
+
         stop(document.querySelector("#filter_dropdown"));
         stop(document.querySelector("#genre_dropdown"));
     }
@@ -217,8 +219,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Like button for the mangapage
     if (document.querySelector("#like_button")) {
         let like_button = document.querySelector("#like_button");
-        let url = like_button.getAttribute('data-url');
-        like_button.removeAttribute('data-url');
+        let url = like_button.getAttribute("data-url");
+        like_button.removeAttribute("data-url");
         like_button.addEventListener("click", () => {
             fetch(url)
                 .then((response) => response.json())

@@ -1,16 +1,14 @@
-{% extends "mangaweb/layout.html" %}
-{% block title %}- Add Manga{% endblock %}
-{% block body %}
+{% extends "mangaweb/layout.html" %} {% block title %}- Add Manga{% endblock %} {% block body %}
 <h2>Create a new manga entry</h2>
 {% if message %}
-    <h3 class="message">{{ message }}</h3>
+<h3 class="message">{{ message }}</h3>
 {% endif %}
 <h4 class="message" id="message"></h4>
 <form action="{% url 'addmanga' %}" method="post" enctype="multipart/form-data" id="addmanga_form">
     {% csrf_token %}
     <div class="mb-3">
         <label for="manga_name" class="form-label">Manga name</label>
-        <input type="text" name="manga_name" class="form-control" id="manga_name" required placeholder="Name">
+        <input type="text" name="manga_name" class="form-control" id="manga_name" required placeholder="Name" />
         <span class="form-text">Max characters: 50</span>
     </div>
     <div class="mb-3">
@@ -19,12 +17,12 @@
             {% for genre in genres %}
             <option value="{{ genre }}">{{ genre }}</option>
             {% endfor %}
-          </select>
-          <span class="form-text">CTRL+ left click to choose multiple genres</span>
+        </select>
+        <span class="form-text">CTRL+ left click to choose multiple genres</span>
     </div>
     <div class="mb-3">
         <label for="custom-genres" class="form-label">Custom genres - Use this if the genre you want is not available</label>
-        <input type="text" name="custom_genre" class="form-control" id="custom-genres" placeholder="Genre1, genre2, genre3, etc">
+        <input type="text" name="custom_genre" class="form-control" id="custom-genres" placeholder="Genre1, genre2, genre3, etc" />
         <span class="form-text">Use a comma to separate each genre, genres shouldnt be larger than 20 characters</span>
     </div>
     <div class="mb-3">
@@ -44,20 +42,20 @@
     </div>
     <div class="mb-3">
         <label for="releasedate" class="form-label">Release date - optional</label>
-        <input type="date" class="form-control" name="releasedate" id="releasedate">
+        <input type="date" class="form-control" name="releasedate" id="releasedate" />
         <span class="form-text">If not released yet, can be an expected release date</span>
     </div>
     <div>
         <label for="enddate" class="form-label">End date - optional</label>
-        <input type="date" class="form-control" name="enddate" id="enddate">
+        <input type="date" class="form-control" name="enddate" id="enddate" />
         <span class="form-text">If still releasing, can be the expected end date</span>
     </div>
     <div class="mb-3">
         <label for="image_input" class="form-label">Manga thumbnail - optional</label>
-        <input class="form-control" type="file" name="thumb" accept="image/*" id="image_input">
+        <input class="form-control" type="file" name="thumb" accept="image/*" id="image_input" />
         <span class="form-text">Max image size: 5MB</span>
     </div>
-    <input class="btn btn-primary" type="submit" value="Submit manga entry">
+    <input class="btn btn-primary" type="submit" value="Submit manga entry" />
     <div id="image_preview" class="container text-center"></div>
 </form>
 {% endblock %}

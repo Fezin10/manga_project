@@ -1,25 +1,22 @@
-{% extends "mangaweb/layout.html" %}
+{% extends "mangaweb/layout.html" %} {% block title %}- Login{% endblock %} {% block body %}
 
-{% block title %}- Login{% endblock %}
-{% block body %}
+<h2>Login</h2>
 
-    <h2>Login</h2>
+{% if message %}
+<div class="message">{{ message }}</div>
+{% endif %}
 
-    {% if message %}
-        <div class="message">{{ message }}</div>
-    {% endif %}
-
-    <form action="{% url 'login' %}" method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input autofocus class="form-control" type="text" name="username" id="username" placeholder="Username">
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input class="form-control" type="password" name="password" id="password" placeholder="Password">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Login">
-    </form>
-    <p>Don't have an account? <a href="{% url 'register' %}">Register here.</a></p>
+<form action="{% url 'login' %}" method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input autofocus class="form-control" type="text" name="username" id="username" placeholder="Username" />
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input class="form-control" type="password" name="password" id="password" placeholder="Password" />
+    </div>
+    <input class="btn btn-primary" type="submit" value="Login" />
+</form>
+<p>Don't have an account? <a href="{% url 'register' %}">Register here.</a></p>
 {% endblock %}

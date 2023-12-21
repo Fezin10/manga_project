@@ -17,9 +17,8 @@
     min-width: 10rem;
     width: 12rem;
     height: 12rem;
-    object-fit:scale-down;
+    object-fit: scale-down;
 }
-
 
 .mangapage_image {
     width: 30rem;

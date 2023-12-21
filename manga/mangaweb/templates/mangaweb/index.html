@@ -1,7 +1,4 @@
-{% extends "mangaweb/layout.html" %}
-{% load static %}
-{% block title %}- Mangas{% endblock %}
-{% block body %}
+{% extends "mangaweb/layout.html" %} {% load static %} {% block title %}- Mangas{% endblock %} {% block body %}
 <h2>Popular mangas</h2>
 {% if message %}
 <h3>{{ message }}</h3>
@@ -9,9 +6,9 @@
 <h4>Filters</h4>
 <div>
     <form action="{% url 'mangas' %}">
-        <input name="page" value="1" hidden>
+        <input name="page" value="1" hidden />
         {% if filters.query %}
-        <input name="query" value="{{ filters.query }}" hidden>
+        <input name="query" value="{{ filters.query }}" hidden />
         {% endif %}
         <div class="dropdown filter_dropdown" id="filter_dropdown">
             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Filters</button>
@@ -30,17 +27,23 @@
                     <label class="form-check-label" for="notreleased">Not Released</label>
                 </li>
                 {% if user.is_authenticated %}
-                    <li><hr class="dropdown-divider">Liked</li>
-                    <li>
-                        <input class="form-check-input" type="checkbox" id="liked" name="liked" {% if filters.liked %}checked{% endif %}>
-                        <label class="form-check-label" for="liked">Liked mangas</label>
-                    </li>
-                    <li>
-                        <input class="form-check-input" type="checkbox" id="authors" name="authors" {% if filters.authors %}checked{% endif %}>
-                        <label class="form-check-label" for="authors">Liked authors</label>
-                    </li>
+                <li>
+                    <hr class="dropdown-divider" />
+                    Liked
+                </li>
+                <li>
+                    <input class="form-check-input" type="checkbox" id="liked" name="liked" {% if filters.liked %}checked{% endif %} />
+                    <label class="form-check-label" for="liked">Liked mangas</label>
+                </li>
+                <li>
+                    <input class="form-check-input" type="checkbox" id="authors" name="authors" {% if filters.authors %}checked{% endif %} />
+                    <label class="form-check-label" for="authors">Liked authors</label>
+                </li>
                 {% endif %}
-                <li><hr class="dropdown-divider">Sort</li>
+                <li>
+                    <hr class="dropdown-divider" />
+                    Sort
+                </li>
                 <li>
                     <input class="form-check-input" type="radio" name="sort" id="az" value="az" {% if filters.sort == 'az' %}checked{% endif %}>
                     <label class="form-check-label" for="az">A-Z</label>
@@ -63,10 +66,10 @@
             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Genre</button>
             <ul class="dropdown-menu">
                 {% for genre in genres %}
-                    <li>
-                        <input class="form-check-input" type="checkbox" name="genres" id="genre-{{ genre }}" value="{{ genre }}" {% if genre.genre in filters.genres %}checked{% endif %}>
-                        <label class="form-check-label" for="genre-{{ genre }}">{{ genre }}</label>
-                    </li>
+                <li>
+                    <input class="form-check-input" type="checkbox" name="genres" id="genre-{{ genre }}" value="{{ genre }}" {% if genre.genre in filters.genres %}checked{% endif %} />
+                    <label class="form-check-label" for="genre-{{ genre }}">{{ genre }}</label>
+                </li>
                 {% endfor %}
             </ul>
         </div>
@@ -75,30 +78,32 @@
 </div>
 <nav aria-label="Page navigation" class="sm_mtop">
     <ul class="pagination justify-content-center">
-      <li class="page-item {% if not data.before %}disabled{% endif %}">
-        <a class="page-link" href="{% if data.before %}{% url 'mangas' %}?page={{ data.page|add:'-1' }}{% if data.filters %}&{{ data.filters }}{% endif %}{% endif %}" aria-label="Previous">
-          <span aria-hidden="true"><strong>&laquo;</strong></span>
-        </a>
-      </li>
-      <li class="page-item active"><a class="page-link">{{ data.page }}</a></li>
-      <li class="page-item {% if not data.after %}disabled{% endif %}">
-        <a class="page-link" href="{% if data.after %}{% url 'mangas' %}?page={{ data.page|add:'1' }}{% if data.filters %}&{{ data.filters }}{% endif %}{% endif %}" aria-label="Next">
-          <span aria-hidden="true"><strong>&raquo;</strong></span>
-        </a>
-      </li>
+        <li class="page-item {% if not data.before %}disabled{% endif %}">
+            <a class="page-link" href="{% if data.before %}{% url 'mangas' %}?page={{ data.page|add:'-1' }}{% if data.filters %}&{{ data.filters }}{% endif %}{% endif %}" aria-label="Previous">
+                <span aria-hidden="true"><strong>&laquo;</strong></span>
+            </a>
+        </li>
+        <li class="page-item active"><a class="page-link">{{ data.page }}</a></li>
+        <li class="page-item {% if not data.after %}disabled{% endif %}">
+            <a class="page-link" href="{% if data.after %}{% url 'mangas' %}?page={{ data.page|add:'1' }}{% if data.filters %}&{{ data.filters }}{% endif %}{% endif %}" aria-label="Next">
+                <span aria-hidden="true"><strong>&raquo;</strong></span>
+            </a>
+        </li>
     </ul>
-  </nav>
+</nav>
 <div class="container text-center">
     <div class="row">
         {% for manga in mangas %}
-            <div class="col">
-                <figure class="figure">
-                    <a href="{% url 'mangapage' manga.id %}"><img src="{% if manga.thumb %}{{ manga.thumb.url }}{% else %}{% static 'mangaweb/images/image_placeholder.webp' %}{% endif %}" class="figure-img img-thumbnail index_image" alt="{{ manga.name }} thumbnail"></a>
-                    <figcaption class="figure-caption text-center">{{ manga.name }}</figcaption>
-                </figure>
-            </div>
+        <div class="col">
+            <figure class="figure">
+                <a href="{% url 'mangapage' manga.id %}">
+                    <img src="{% if manga.thumb %}{{ manga.thumb.url }}{% else %}{% static 'mangaweb/images/image_placeholder.webp' %}{% endif %}" class="figure-img img-thumbnail index_image" alt="{{ manga.name }} thumbnail" />
+                </a>
+                <figcaption class="figure-caption text-center">{{ manga.name }}</figcaption>
+            </figure>
+        </div>
         {% empty %}
-            <div class="col">No mangas found for the used filters</div>
+        <div class="col">No mangas found for the used filters</div>
         {% endfor %}
     </div>
 </div>

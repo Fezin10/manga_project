@@ -1,22 +1,17 @@
-{% extends "mangaweb/layout.html" %}
-{% block title %}- {{ manga.name }} {{ chapter.chapter_number }}{% endblock %}
-{% block body %}
-{% if user.is_authenticated %}
+{% extends "mangaweb/layout.html" %} {% block title %}- {{ manga.name }} {{ chapter.chapter_number }}{% endblock %} {% block body %} {% if user.is_authenticated %}
 <data id="view" hidden>{% url 'visualization' chapter.manga.id chapter.chapter_number %}</data>
 {% endif %}
 <div id="page_view">
     {% if data.next %}
-        <a href="{% url 'mangaread' chapter.manga.id chapter.chapter_number|add:'1' %}" id="next" class="chapter_button">Next chapter</a>
+    <a href="{% url 'mangaread' chapter.manga.id chapter.chapter_number|add:'1' %}" id="next" class="chapter_button">Next chapter</a>
     {% else %}
-        <p id="next" class="chapter_button">Next chapter not released yet or missing</p>
-    {% endif %}
-    {% for pages in chapter.pages.all %}
-        <img src="{{ pages.page_content.url }}" class="page_read">
-    {% endfor %}
-    {% if data.previous %}
-        <a href="{% url 'mangaread' chapter.manga.id chapter.chapter_number|add:'-1' %}" id="previous" class="chapter_button">Previous chapter</a>
+    <p id="next" class="chapter_button">Next chapter not released yet or missing</p>
+    {% endif %} {% for pages in chapter.pages.all %}
+    <img src="{{ pages.page_content.url }}" class="page_read" />
+    {% endfor %} {% if data.previous %}
+    <a href="{% url 'mangaread' chapter.manga.id chapter.chapter_number|add:'-1' %}" id="previous" class="chapter_button">Previous chapter</a>
     {% else %}
-        <p id="previous" class="chapter_button">No previous chapter</p>
+    <p id="previous" class="chapter_button">No previous chapter</p>
     {% endif %}
     <div class="page_overlay page_left_overlay" id="next_button" onclick="left()"></div>
     <div class="page_overlay page_right_overlay" id="previous_button" onclick="right()"></div>

@@ -19,10 +19,11 @@ from . import helper
 def addchapter(request):
     if not request.user.author:
         raise Http404("Only authors can add chapters to their mangas")
-    
+    if request.user.retained:
+        raise Http404("Retained users can not upload chapters!")
     # retrieve the manga the user have and also the last chapter the user have uploaded to prevent confusion when trying to add new chapters
     latest_chapter_subquery = Chapter.objects.filter(manga=OuterRef('pk')).order_by('-chapter_number').values('chapter_number')[:1]
-    mangas = Manga.objects.annotate(latest_chapter=Subquery(latest_chapter_subquery)).filter(author=request.user).order_by('name')
+    mangas = Manga.objects.annotate(latest_chapter=Subquery(latest_chapter_subquery)).filter(author=request.user).order_by('name').exclude(retained=True)
 
     def error(message):
         return render(request, 'mangaweb/addchapter.html', {'mangas': mangas, 'message': message})
@@ -36,6 +37,9 @@ def addchapter(request):
         except:
             return error('Invalid manga selected!')
         
+        if manga.retained:
+            raise Http404("Can not upload new chapters to retained manga")
+
         chapter_number = request.POST['chapter']
         # check if the chapter is free to use
         if Chapter.objects.filter(manga=manga, chapter_number=chapter_number).exists():
@@ -61,6 +65,8 @@ def addchapter(request):
 def addmanga(request):
     if not request.user.author:
         raise Http404("Only authors can add mangas")
+    if request.user.retained:
+        raise Http404("Retained users can not create manga entries")
     
     genre_entries = Genre.objects.all().order_by('genre')
     if request.method == 'GET':

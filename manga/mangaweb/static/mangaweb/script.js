@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then((response) => response.json())
                 .then((data) => {
                     if (data["status"] === "success") {
-                        location.reload();
+                        window.location.href = "../../";
                     } else {
                         alert("Operation failed!");
                     }

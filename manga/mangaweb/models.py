@@ -80,7 +80,7 @@ class Page(models.Model):
 @receiver(post_delete, sender=Chapter)
 def delete_chapter(sender, instance, **kwargs):
     manga = instance.manga
-    chapter_directory = os.path.join('media/manga/', manga.name, str(manga.id), str(instance.chapter_number))
+    chapter_directory = os.path.join('media/manga/', str(manga.id), str(instance.chapter_number))
     try:
         shutil.rmtree(chapter_directory)
         print(f"\033[1;34m{chapter_directory}\033[m directory deleted.")
@@ -90,15 +90,9 @@ def delete_chapter(sender, instance, **kwargs):
 
 @receiver(post_delete, sender=Manga)
 def delete_manga(sender, instance, **kwargs):
-    manga_directory = os.path.join('media/manga', instance.name)
+    manga_directory = os.path.join('media/manga', str(instance.id))
     try:
-        manga_count = len(os.listdir(manga_directory))
-        if manga_count == 1:
-            shutil.rmtree(manga_directory)
-        else:
-            manga_directory = os.path.join(manga_directory, str(instance.id))
-            shutil.rmtree(manga_directory)
-        
+        shutil.rmtree(manga_directory)
         print(f"\033[1;34m{manga_directory}\033[m directory deleted.")
     except OSError as error:
         print(f"\033[1;31m{error}\033[m directory doesn't exist.")

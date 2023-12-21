@@ -13,7 +13,7 @@
         <div id="page_content">
             <div>Account created at: {{ pageuser.date_joined|date:"Y-m-d" }}</div>
             <div>Staff: {{ pageuser.moderator }}</div>
-            <div id="user_author_div">Author:{% if not pageuser.author and user == pageuser %}<button class="btn btn-primary" id="author_button" value="{% url 'authorregister' %}">Be an author</button>{% else %} {{ pageuser.author }}{% endif %}</div>
+            <div id="user_author_div">Author:{% if not pageuser.author and user == pageuser %}<button class="btn btn-primary" id="author_button" data-url="{% url 'authorregister' %}">Be an author</button>{% else %} {{ pageuser.author }}{% endif %}</div>
             {% if pageuser.author %}
             <div>Works: {{ pageuser.works.count }}</div>
             {% endif %}
@@ -21,7 +21,7 @@
             <div>Following: {{ pageuser.following.count }}</div>
             {% if user.is_authenticated %}
                 {% if user != pageuser %}
-                    <div><button id="follow_button" class="btn btn-primary sm_mtop" value="{% url 'follow' pageuser.id %}">{% if following %}Unfollow{% else %}Follow{% endif %}</button></div>
+                    <div><button id="follow_button" class="btn btn-primary sm_mtop" data-url="{% url 'follow' pageuser.id %}">{% if following %}Unfollow{% else %}Follow{% endif %}</button></div>
                     {% if user.moderator %}
                         {% if not pageuser.retained %}
                             <div><a class="btn btn-warning sm_mtop" id="analysis_button" data-url="{% url 'retain_user' pageuser.id %}">Retain for analysis</a></div>

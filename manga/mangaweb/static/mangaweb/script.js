@@ -2,10 +2,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Retain an user or manga to analysis
     if (document.querySelector("#analysis_button")) {
         let analysis = document.querySelector("#analysis_button");
+        let url = analysis.getAttribute("data-url");
+        analysis.removeAttribute("data-url");
         analysis.addEventListener("click", () => {
             let check = window.prompt("Report the problem: ");
             if (check !== null) {
-                fetch(`${analysis.getAttribute("data-url")}?reason=${check}`)
+                fetch(`${url}?reason=${check}`)
                     .then((response) => response.json())
                     .then((data) => {
                         if (data["status"] === "success") {
@@ -21,12 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // Let the user register themself as an author
     if (document.querySelector("#author_button")) {
         let author_button = document.querySelector("#author_button");
+        let url = author_button.getAttribute('data-url');
+        author_button.removeAttribute("data-url");
         author_button.addEventListener("click", () => {
-            fetch(author_button.value)
+            fetch(url)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data["status"] == "success") {
-                        document.querySelector("#user_author_div").innerHTML = "Author: True";
+                        location.reload();
+                    } else {
+                        alert('Fail');
                     }
                 });
         });
@@ -75,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.querySelector('#deletemanga_button')){
         let button = document.querySelector('#deletemanga_button');
         button.addEventListener('click', (event) => {
-            let confirmation = confirm('Are you sure you want to delete the manga?')
+            let confirmation = confirm('Are you sure you want to delete the manga?');
             if (!confirmation) {
                 event.preventDefault();
             }
@@ -98,8 +104,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Follow button for the userpage
     if (document.querySelector("#follow_button")) {
         let follow_button = document.querySelector("#follow_button");
+        let url = follow_button.getAttribute("data-url");
+        follow_button.removeAttribute("data-url");
         follow_button.addEventListener("click", () => {
-            fetch(follow_button.value)
+            fetch(url)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data["status"] !== "success") {
@@ -209,8 +217,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Like button for the mangapage
     if (document.querySelector("#like_button")) {
         let like_button = document.querySelector("#like_button");
+        let url = like_button.getAttribute('data-url');
+        like_button.removeAttribute('data-url');
         like_button.addEventListener("click", () => {
-            fetch(like_button.getAttribute('data-url'))
+            fetch(url)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data["status"] !== "success") {

@@ -8,11 +8,8 @@ from .models import *
 
 @ratelimit(key='user', rate='1/2d', block=True)
 def change_password(user, old, new, check):
-    if check_password(old):
-        if new == check and len(new) > 4:
-            return True
-        else:
-            return False
+    if check_password(old) and new == check and len(new) > 4:
+        return True
     else:
         return False
 
@@ -91,6 +88,7 @@ def image_size_validation(image, size):
 @ratelimit(key='user', rate='1/m', block=True)
 def login_user(request, user):
     login(request, user)
+
 
 def moderator_required(view):
     def wrapper(request, *args, **kwargs):

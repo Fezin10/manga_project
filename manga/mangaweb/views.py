@@ -1,14 +1,11 @@
-import os
-
-from django import forms
-from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
-from django.db import IntegrityError
-from django.db.models import Count, OuterRef, Subquery
-from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
+from django.db import IntegrityError, transaction
+from django.db.models import OuterRef, Subquery
+from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
 from django.shortcuts import render
@@ -33,31 +30,30 @@ def addchapter(request):
     if request.method == 'GET':
         return render(request, 'mangaweb/addchapter.html', {'mangas': mangas})
     else:
-        chapter_number = request.POST['chapter']
         # check if the manga exists
         try:
             manga = Manga.objects.get(id=request.POST['manga'])
         except:
             return error('Invalid manga selected!')
         
+        chapter_number = request.POST['chapter']
         # check if the chapter is free to use
-        try:
-            Chapter.objects.get(manga=manga, chapter_number=chapter_number)
+        if Chapter.objects.filter(manga=manga, chapter_number=chapter_number).exists():
             return error('Chapter already exists!')
-        except:
-            pass
 
-        chapter = Chapter(chapter_number=chapter_number, manga=manga)
-        if request.FILES:
-            chapter.save()
-            for i, image in enumerate(request.FILES.getlist('pages'), start=1):
-                if not image.content_type.startswith('image'):
-                    chapter.delete()
-                    return error('Invalid file type sended as image, chapter not saved!')
-                                
-                Page(chapter=chapter, page_number=i, page_content=image).save()
-        else:
-            return error('No images provided')
+        with transaction.atomic():
+            chapter = Chapter(chapter_number=chapter_number, manga=manga)
+            try:
+                if request.FILES:
+                    chapter.save()
+                    for i, image in enumerate(request.FILES.getlist('pages'), start=1):
+                        if not image.content_type.startswith('image'):
+                            raise ValidationError(f'Invalid file type at page {i}, chapter not saved')
+                        Page(chapter=chapter, page_number=i, page_content=image).save()
+                else:
+                    raise ValidationError('No images provided')
+            except ValidationError as e:
+                return error(e)
         return HttpResponseRedirect(reverse('mangapage', args=[manga.id]))
 
 
@@ -65,13 +61,14 @@ def addchapter(request):
 def addmanga(request):
     if not request.user.author:
         raise Http404("Only authors can add mangas")
+    
     genre_entries = Genre.objects.all().order_by('genre')
     if request.method == 'GET':
         return render(request, 'mangaweb/addmanga.html', {'genres': genre_entries})
     elif request.method == 'POST':
         def error(message):
             return render(request, 'mangaweb/addmanga.html', {'genres': genre_entries, 'message': message})
-
+        
         manga = Manga(name=request.POST["manga_name"].strip(), author=request.user, sinopse=request.POST["sinopse"])
         status = request.POST["status"]
         manga.status = status
@@ -119,6 +116,7 @@ def authorregister(request):
         return JsonResponse({'status': 'Invalid status'})
 
 
+@helper.moderator_required
 def block_manga(request, manga_id):
     try:
         manga = Manga.objects.get(id=manga_id)
@@ -178,8 +176,7 @@ def edit(request, manga_id):
         raise Http404("Manga not found")
     
     if request.method == "GET":
-        genres = Genre.objects.all().order_by('genre')
-        return render(request, "mangaweb/edit.html", {'manga': manga, 'genres': genres})
+        return render(request, "mangaweb/edit.html", {'manga': manga, 'genres': Genre.objects.all().order_by('genre')})
     else:
         def error(message):
             return render(request, 'mangaweb/edit.html', {'genres': Genre.objects.all().order_by('genre'), 'message': message})
@@ -187,8 +184,6 @@ def edit(request, manga_id):
 
         # Setting the new fields
         manga.status = request.POST['status']
-        if manga.retained:
-            return error('Invalid status')
         manga.sinopse = request.POST['sinopse']
         if request.POST["releasedate"]: manga.releasedate = request.POST["releasedate"]
         if request.POST["enddate"]: manga.enddate = request.POST["enddate"]
@@ -316,13 +311,12 @@ def free_user(request, user_id):
             user.faults += 1
         user.save()
         return JsonResponse({'status': 'success'})
-    except Exception as e:
-        print(e)
+    except Exception:
         return JsonResponse({'status': 'fail'})
 
 
 def index(request):
-    return HttpResponseRedirect('mangas?page=1')
+    return HttpResponseRedirect(f'{reverse("mangas")}?page=1')
 
 
 @login_required
@@ -366,12 +360,12 @@ def logout_view(request):
     return HttpResponseRedirect(reverse('index'))
 
 
-def mangapage(request, mangaid):
+def mangapage(request, manga_id):
     if request.method != "GET":
         return HttpResponseRedirect(reverse("index"))
     else:
         try:
-            manga = Manga.objects.get(id=mangaid)
+            manga = Manga.objects.get(id=manga_id)
         except:
             raise Http404("Manga not found")
         if manga.retained and request.user != manga.author and request.user.moderator == False:
@@ -393,10 +387,7 @@ def mangaread(request, manga_id, chapter_number):
     except:
         raise Http404("Manga not found or chapter not found")
     
-    data = dict()
-    data['next'] = manga.chapters.filter(chapter_number=chapter_number+1).exists()
-    data['previous'] = manga.chapters.filter(chapter_number=chapter_number-1).exists()
-    print(request.user_agent.is_mobile)
+    data = {'next': manga.chapters.filter(chapter_number=chapter_number+1).exists(), 'previous': manga.chapters.filter(chapter_number=chapter_number-1).exists()}
     return render(request, 'mangaweb/mangaread.html' if not request.user_agent.is_mobile else 'mangaweb/mangaread_mobile.html', {'chapter': chapter, 'data': data})
 
 
@@ -405,7 +396,6 @@ def mangas(request):
     mangas = Paginator(mangas, 10 if request.user_agent.is_mobile else 20)
     page = int(request.GET.get('page')) if request.GET.get('page') else 1
     data = {'page': page, 'num_pages': mangas.num_pages, 'before': page-1 > 0, 'after': page+1 <= mangas.num_pages, 'filters': helper.filters_to_url(filters)}
-
 
     return render(request, 'mangaweb/index.html', {'mangas': mangas.page(page), 'genres': dropdown_genres, 'filters': filters, 'data': data})
 
@@ -489,7 +479,6 @@ def userpage(request, user_id):
             user = User.objects.get(id=user_id)
         except:
             raise Http404('User not found')
-        print(user.retained)
         if user.retained and request.user != user and not request.user.moderator:
             raise Http404("User not found")
         if user.author:

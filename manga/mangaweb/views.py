@@ -37,6 +37,9 @@ def addchapter(request):
         except:
             return error('Invalid manga selected!')
         
+        if manga.author != request.user:
+            raise Http404("You are not the author of this manga")
+
         if manga.retained:
             raise Http404("Can not upload new chapters to retained manga")
 
@@ -82,10 +85,7 @@ def addmanga(request):
         if releasedate: manga.releasedate = releasedate
         enddate = request.POST["enddate"]
         if enddate: manga.enddate = enddate
-        try:
-            thumb = request.FILES["thumb"]
-        except:
-            thumb = None
+        thumb = request.FILES.get("thumb")
         genres = request.POST.getlist("genres")
         custom = request.POST["custom_genre"].split(',')
         
@@ -114,12 +114,8 @@ def addmanga(request):
 
 @login_required
 def authorregister(request):
-    if not request.user.author:
-        request.user.author = True
-        request.user.save()
-        return JsonResponse({'status': 'success'})
-    else:
-        return JsonResponse({'status': 'Invalid status'})
+    request.user.author = True
+    request.user.save()
 
 
 @helper.moderator_required
@@ -169,6 +165,7 @@ def deletemanga(request, manga_id):
         manga.delete()
     return HttpResponseRedirect(reverse(index))
 
+
 @login_required
 def edit(request, manga_id):
     # validation
@@ -193,10 +190,7 @@ def edit(request, manga_id):
         manga.sinopse = request.POST['sinopse']
         if request.POST["releasedate"]: manga.releasedate = request.POST["releasedate"]
         if request.POST["enddate"]: manga.enddate = request.POST["enddate"]
-        try:
-            thumb = request.FILES["thumb"]
-        except:
-            thumb = None
+        thumb = request.FILES.get("thumb")
         genres = request.POST.getlist("genres")
         custom = request.POST["custom_genre"].split(',')
         
@@ -421,11 +415,8 @@ def register_view(request):
         icon = request.FILES.get("icon")
         
         # check if the user is trying to register with a banned email
-        try:
-            Banned.objects.get(email=email)
+        if Banned.objects.filter(email=email).exists():
             return error("You're banned")
-        except Banned.DoesNotExist:
-            pass
 
         # validation of the icon, password and email
         if icon:

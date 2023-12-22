@@ -29,7 +29,7 @@
         <label for="status" class="form-label">Manga status</label>
         <select class="form-select" name="status" id="status" required>
             <option value="" disabled>Select a status for your manga</option>
-            <option value="F" {% if manga.status =="F" %}selected{% endif %}>Finished</option>
+            <option value="F" {% if manga.status == "F" %}selected{% endif %}>Finished</option>
             <option value="R" {% if manga.status == "R" %}selected{% endif %}>Releasing</option>
             <option value="N" {% if manga.status == "N" %}selected{% endif %}>Not released</option>
         </select>

@@ -116,6 +116,7 @@ def addmanga(request):
 def authorregister(request):
     request.user.author = True
     request.user.save()
+    return JsonResponse({"status": "success"})
 
 
 @helper.moderator_required

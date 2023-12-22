@@ -4,7 +4,9 @@
 {% if message %}
 <div class="message">{{ message }}</div>
 {% endif %}
+{% if chapter.manga.author == user %}
 <div class="text-center"><a class="btn btn-danger" href="{% url 'chapter_delete' chapter.manga.id chapter.chapter_number %}" id="delete_button">Delete</a></div>
+{% endif %}
 <div class="container text-center">
     <div class="row align-items-center justify-content-center">
         <div class="col-1">

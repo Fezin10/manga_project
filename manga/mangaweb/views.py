@@ -6,7 +6,6 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import OuterRef, Subquery
 from django.http import HttpResponseRedirect, Http404, JsonResponse
-from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
 from django.shortcuts import render
 from django.urls import reverse

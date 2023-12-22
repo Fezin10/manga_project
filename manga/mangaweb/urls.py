@@ -11,6 +11,7 @@ urlpatterns = [
     path("manga/", views.mangas, name="mangas"),    
     path("manga/add", views.addmanga, name="addmanga"),
     path("manga/chapter/add", views.addchapter, name="addchapter"),
+    path("manga/chapter/delete/<int:manga_id>/<int:chapter>", views.chapter_delete, name="chapter_delete"),
     path("manga/delete/<int:manga_id>", views.deletemanga, name="deletemanga"),
     path("manga/edit/<int:manga_id>", views.edit, name="editmanga"),
     path("manga/like/<int:manga_id>", views.like, name="mangalike"),

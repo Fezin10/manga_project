@@ -79,10 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Delete the manga of the page you are if you're the author of the manga
-    if (document.querySelector("#deletemanga_button")) {
-        let button = document.querySelector("#deletemanga_button");
+    if (document.querySelector("#delete_button")) {
+        let button = document.querySelector("#delete_button");
         button.addEventListener("click", (event) => {
-            let confirmation = confirm("Are you sure you want to delete the manga?");
+            let confirmation = confirm("Are you sure you want to delete?");
             if (!confirmation) {
                 event.preventDefault();
             }

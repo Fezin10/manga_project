@@ -156,6 +156,19 @@ def block_user(request, user_id):
 
 
 @login_required
+def chapter_delete(request, manga_id, chapter):
+    try:
+        manga = Manga.objects.get(id=manga_id)
+    except:
+        raise Http404("Manga not found")
+    try:
+        manga.chapters.get(chapter_number=chapter).delete()
+    except:
+        raise Http404("Chapter doesn't exist")
+    return HttpResponseRedirect(reverse('mangapage', args=[manga_id]))
+
+
+@login_required
 def deletemanga(request, manga_id):
     try:
         manga = Manga.objects.get(id=manga_id)

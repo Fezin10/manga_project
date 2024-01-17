@@ -241,8 +241,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Show each image at a time in the page visualization page
     if (document.querySelector("#page_view")) {
-        let visualization = document.querySelector("#view").innerHTML;
-        document.querySelector("#view").remove();
+        if (document.querySelector('#view')) {
+            var visualization = document.querySelector("#view").innerHTML;
+            document.querySelector("#view").remove();
+        }
+        
         let index = 0; // keeps track of which image to show
         let pages = document.querySelectorAll(".page_read");
 
@@ -277,7 +280,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (index + 1 >= pages.length) {
                     next.style.display = "inline";
                     // mark the chapter as read if reach the last next chapter page
-                    fetch(visualization);
+                    if (visualization) {
+                        fetch(visualization);
+                    }
                     // update the touch area if in the mobile version
                     changetop();
                 } else {

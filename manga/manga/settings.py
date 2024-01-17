@@ -30,7 +30,9 @@ DEBUG = True
 
 LOGIN_URL = '/login'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
+
+CSRF_TRUSTED_ORIGINS = ['https://localhost:8000']
 
 # Application definition
 

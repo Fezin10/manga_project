@@ -268,6 +268,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         document.addEventListener("keydown", handleArrowKey);
+        document.querySelector('#next_button').addEventListener('click', left);
+        document.querySelector('#previous_button').addEventListener('click', right);
 
         // Go to next image
         function left() {

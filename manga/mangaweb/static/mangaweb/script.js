@@ -262,14 +262,12 @@ document.addEventListener("DOMContentLoaded", () => {
         // handle the clicks to change the image
         document.querySelector("#next_button").addEventListener("click", left);
         document.querySelector("#previous_button").addEventListener("click", right);
+        document.addEventListener("keydown", handleArrowKey);
         // handles when the navbar is being used
         document.querySelector("#navbar-toggler").addEventListener("click", () => {
             setTimeout(changetop, 320);
         });
 
-        document.addEventListener("keydown", handleArrowKey);
-        document.querySelector('#next_button').addEventListener('click', left);
-        document.querySelector('#previous_button').addEventListener('click', right);
 
         // Go to next image
         function left() {

@@ -1,9 +1,4 @@
 # Mangaweb
-## Distinctiveness and Complexity
-#### Distinctiveness
-  My project is different of all other projects because it is oriented for content consumption, a website that you can post your content, read others content, edit your content, can also be managed by a moderator team that have the abilities to retain content for analysis, so the author can adapt their content to the rules or in case it don't happen, remove the content from the page.
-#### Complexity  
-  My project use images, various checks, client side validation, server side validation, django additional libraries, access control, folder and file management, reusable codes, request limit for some functions.
 
 ## files
 ### Static
@@ -57,9 +52,10 @@
 #### requiriments.txt
   To save each package that need to be downloaded to make the application run correctly.
 ## How to run
-  To run the application you need to run `python3 manage.py makemigrations` then `python3 manage.py migrate`, also need to create an folder called "media" at the same level as the manage.py, then run the server.
+  First import the libraries in the requiriments.txt and assure that django is installed.    
+  To run the application you need to run `python3 manage.py makemigrations mangaweb` then `python3 manage.py migrate`, also need to create an folder called "media" at the same level as the manage.py, then run the server.
 ## Additional
-  + To become an author, go to the user page, clicking in your username and clicking the button "become an author", to become an moderator, go to the /admin and set yourself to be an moderator.  
+  + To become an author, log in, go to the user page, clicking in your username and clicking the button "become an author", to become an moderator, go to the /admin and set yourself to be an moderator.  
   + Some pages will detect mobile access at the start of the page only, so just turn on the mobile mode and refresh the page.  
   + Mangas are read right to left, that's why the mangaread show images from right to left.  
-  + Both mangaread will set a chapter to read when reach the "next chapter" page.
+  + Both mangaread will set a chapter to "readed" when reach the "next chapter" page.
